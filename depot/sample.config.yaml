@@ -1,0 +1,35 @@
+---
+max_threads: 2
+
+# DB path
+nr_db_path: nr
+sp_fasta_path: uniprot_sprot.fasta
+
+## Algorithm options
+# prepare
+ai_cutoff: 0
+percent_identity: 100
+cutoffextend: 20    # when toi hit is found, we take this hit + n hits
+threads: 2
+trimal: false
+min_num_hits: 4   # select queries with at least that many blast hits
+percentage_similar_hits: 0.7  # group queries based on this
+mode: sp    # use nr for nr database, use sp for swissprot database
+# evaluate, clasify
+fastml: true  # Use fasttree instead of IQTree
+node_support: 0  # nodes below that number will collapse
+complex_per_toi: 20   # if H/(H+T) smaller than this then node is considered T
+complex_per_hgt: 80   # if H/(H+T) greater than this then node is considered H
+complex_per_node: 90  # if node contains percent number of this category, it is assigned
+
+# Program specific options
+mafft_options: '--anysymbol --auto'
+trimal_options: '-automated1'
+
+#IQ-Tree
+iqmodel: '-mset WAG,LG,JTT -AICc -mrate E,I,G,R'
+ufbootstrap: 1000
+iq_threads: 4
+
+#Fasttree
+fasttree_threads: 1

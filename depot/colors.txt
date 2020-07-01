@@ -1,0 +1,18 @@
+#Exclude
+FF2200:StudiedOrganism
+FF5500:EGP
+#Target
+FF8D00:TOI
+#Other ranks
+00CC44:Bacteria
+00B389:Fungi
+00B3AD:Viridiplantae
+0092B3:Viruses
+0083B3:Viroids
+0069B3:Archaea
+0048B3:Eukaryota
+0048B3:Metazoa
+#Other
+C8CCD3:Other
+C8CCD3:Unclassified
+C8CCD3:Unknown
