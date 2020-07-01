@@ -6,6 +6,7 @@
   - ``` conda install -c bioconda mafft blast trimal fasttree iqtree```
 - Python libraries
   - ```pip install numpy networkx pyyaml ete3 six biopython docopt pybedtools```
+- The first time you run any program it will create a database for nodes and names from the NCBI
 
 
 ### Databases
