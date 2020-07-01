@@ -1,3 +1,5 @@
+![Logo](assets/avp_logo.png)
+
 ## Create environment
 - Conda
  - ```conda create --name avp python=3```
