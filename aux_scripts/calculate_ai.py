@@ -27,6 +27,8 @@ def main():
 
     input_file = args['--input']
     groups_yaml = args['--tax_groups']
+    outout_file_path = os.path.join(input_file,"_ai,out")
+    outout_file = open(outout_file_path,'w')
 
     stream = open(groups_yaml, 'r')
     toi_egp = yaml.safe_load(stream)
@@ -44,7 +46,7 @@ def main():
     best_hit_ntoi = {}
     num_hits = {}
 
-    print ("query name\tNO-TOI\tTOI\tAI\tquery hits number")
+    outout_file.write("query name\tNO-TOI\tTOI\tAI\tquery hits number\n")
 
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
@@ -101,7 +103,9 @@ def main():
             ntoi_evalue = float(best_hit_ntoi[gene]["evalue"])
 
         ai = calculate_ai(toi_evalue,ntoi_evalue)
-        print(gene + "\t" + ntoi_str + "\t" + toi_str + "\t" + str(ai) + "\t" + str(num_hits[gene]))
+        outout_file.write(gene + "\t" + ntoi_str + "\t" + toi_str + "\t" + str(ai) + "\t" + str(num_hits[gene])+"\n")
+
+    outout_file.close()
 
 def calculate_ai(toi_evalue,ntoi_evalue):
     offset = 1e-200
