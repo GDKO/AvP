@@ -30,6 +30,3 @@ trimal_options: '-automated1'
 iqmodel: '-mset WAG,LG,JTT -AICc -mrate E,I,G,R'
 ufbootstrap: 1000
 iq_threads: 4
-
-#Fasttree
-fasttree_threads: 1

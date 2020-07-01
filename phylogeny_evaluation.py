@@ -72,12 +72,8 @@ def main():
     iqmodel = config_opts["iqmodel"]
     ufbootstrap = config_opts["ufbootstrap"]
 
-    # FastTree parameters
-    fasttree_threads = config_opts["fasttree_threads"]
-
     if fastml:
-        check_programs("FastTreeMP")
-        jobs = int(threads/fasttree_threads)
+        check_programs("fasttree")
     else:
         check_programs("iqtree")
         jobs = int(threads/iq_threads)
@@ -157,7 +153,7 @@ def main():
             group_file = os.path.join(input_dir,group_name)
             if fastml:
                 fasttree_params = "-gamma -lg " + group_file + " > " + os.path.join(tree_path, group_name + ".fasttree")
-                t_list=[fasttree_params,fasttree_threads]
+                t_list=[fasttree_params]
                 job_list.append(t_list)
             else:
                 fname = os.path.join(tree_path,group_name)

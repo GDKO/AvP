@@ -58,10 +58,8 @@ def open_file(fname):
 # Run FastTree
 def run_fasttree(t_list):
     fasttree_params = t_list[0]
-    fasttree_threads = t_list[1]
-    os.environ['OMP_NUM_THREADS'] = str(fasttree_threads)
     FNULL = open(os.devnull, 'w')
-    subprocess.call("FastTreeMP " + fasttree_params, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
+    subprocess.call("fasttree " + fasttree_params, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
 
 # Run iqtree
 def run_iqtree(iqtree_params):

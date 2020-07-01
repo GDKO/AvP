@@ -3,7 +3,7 @@
  - ```conda create --name avp python=3```
  - ```conda activate avp```
 - Programs
-  - ``` conda install -c bioconda mafft blast trimal```
+  - ``` conda install -c bioconda mafft blast trimal fasttree iqtree```
 - Python libraries
   - ```pip install numpy networkx pyyaml ete3 six biopython docopt pybedtools```
 
@@ -86,9 +86,6 @@ trimal_options: '-automated1'
 iqmodel: '-mset WAG,LG,JTT -AICc -mrate E,I,G,R'
 ufbootstrap: 1000
 iq_threads: 4
-
-#Fasttree
-fasttree_threads: 1
 ```
 
 #### Prepare files for downstream analyses
