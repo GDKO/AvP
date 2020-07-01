@@ -23,7 +23,7 @@
   - ```mkdir taxdump```
   - ```tar xvf taxdump.tar.gz -C taxdump```
 - Create taxid file with swissprot_to_acc2taxid.pl
-  - ```swissprot_to_acc2taxid.pl uniprot_sprot.fasta.gz > sp.taxids```
+  - ```swissprot_to_acc2taxid.py -i uniprot_sprot.fasta.gz > sp.taxids```
 - Create Diamond db
   - ```diamond makedb --in uniprot_sprot.fasta.gz --taxonmap sp.taxids --db uniprot_sprot.fasta.dmnd --taxonnodes taxdump/nodes.dmp --taxonnames taxdump/names.dmp```
 
