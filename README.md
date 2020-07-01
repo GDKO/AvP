@@ -101,6 +101,8 @@ fasttree_threads: 1
   - ```tmp/taxonomy_nexus.txt``` taxonomic lineage for each protein
   - ```groups.tsv``` file specifying the groups
 
+_**if fastml was set to false then substitute fasttree for iqtree**_
+
 #### Create and evaluate trees for presence/absence of HGTs
 - ```phylogeny_evaluation.py -i [output_dir]/mafftgroups/ -o [output_dir] -g [output_dir]/groups.tsv -t [output_dir]/tmp/taxonomy_nexus.txt -c config.yaml```
 - The following folders will be created inside output dir
