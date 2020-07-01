@@ -25,23 +25,15 @@ def main():
     input_file = args['--input']
 
 
-    print("acc\tver\ttaxid\n")
+    print("acc\tver\ttaxid")
 
     swissprot_re = re.compile("OX=\d*")
-    swissprot_re_sv = re.compile("SV=\d*")
 
     with open_file(input_file) as handle:
         for record in SeqIO.parse(handle,"fasta"):
-            ver = ""
-            id = ""
-            taxid = ""
-            tr = ""
             tr, id, tr = record.name.split("|")
-            print(id)
             tr, taxid = swissprot_re.search(record.description).group().split("=")
-            tr, ver = swissprot_re_sv.search(record.description).group().split("=")
-
-
+            print(id + "\t" + id + ".1" + "\t" + taxid)
 
 if __name__ == '__main__':
     main()
