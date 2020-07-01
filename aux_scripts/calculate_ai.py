@@ -27,7 +27,7 @@ def main():
 
     input_file = args['--input']
     groups_yaml = args['--tax_groups']
-    outout_file_path = os.path.join(input_file,"_ai,out")
+    outout_file_path = input_file + "_ai,out"
     outout_file = open(outout_file_path,'w')
 
     stream = open(groups_yaml, 'r')
