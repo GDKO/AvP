@@ -11,7 +11,6 @@
         -t, --tree_results <FILE>   Tree results file
         -m, --mode <mode>           mode to run
         -k, --k_value <INT>         number of close genes to process [default: 5]
-        --version                   print version
 
     Arguments:
         mode: Eugene   - gff from Eugene Pipeline
@@ -27,7 +26,7 @@ from docopt import docopt
 from pybedtools import BedTool
 
 def main():
-    args = docopt(__doc__,version='0.9.0')
+    args = docopt(__doc__)
     genome_annotation_file = args['--file']
     ai_file = args['--ai_file']
     tree_results_file = args['--tree_results']

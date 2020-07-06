@@ -8,7 +8,6 @@
         -h, --help                   show this
         -e, --expression_file <FILE> expression_file file
         -t, --tree_results <FILE>    tree results file
-        --version                    print version
 """
 
 import os
@@ -17,7 +16,7 @@ from docopt import docopt
 
 def main():
 
-    args = docopt(__doc__,version='0.9.0')
+    args = docopt(__doc__)
     expression_file = args['--expression_file']
     tree_results_file = args['--tree_results']
 

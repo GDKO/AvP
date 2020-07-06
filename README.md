@@ -43,7 +43,7 @@
 ### Run AvP
 
 #### Create yaml files
-- Create groups.yaml
+- Create taxonomic groups groups.yaml
   - ```TOI``` is for which is the target of the HGT
   - ```EGP``` is for which taxonomic groups to exclude from calculations
 - In the following example we have proteins from the nematode _Meloidogyne incognita_ and we want to find HGTs from Non Metazoa species to our species. For that we set ```TOI``` to Metazoa and ```EGP``` to the suborder Tylenchida which our species belongs to, to allow for HGTs that may be present also in other Tylenchida species
@@ -93,7 +93,7 @@ iq_threads: 4
 ```
 
 #### Prepare files for downstream analyses
-- ```prepare_files.py -a [ai.out] -o [output_dir] -f [protein.fasta] -b [blast.out|diamond.out] -g groups.yaml -c config.yaml```
+- ```avp prepare -a [ai.out] -o [output_dir] -f [protein.fasta] -b [blast.out|diamond.out] -x groups.yaml -c config.yaml```
 - The following folders will be created inside output dir
   - ```tmp``` temporary files
   - ```fastagroups``` fasta sequences for each group
@@ -105,7 +105,7 @@ iq_threads: 4
 _**if fastml was set to false then substitute fasttree for iqtree**_
 
 #### Create and evaluate trees for presence/absence of HGTs
-- ```phylogeny_evaluation.py -i [output_dir]/mafftgroups/ -o [output_dir] -g [output_dir]/groups.tsv -t [output_dir]/tmp/taxonomy_nexus.txt -c config.yaml```
+- ```avp detect -i [output_dir]/mafftgroups/ -o [output_dir] -g [output_dir]/groups.tsv -t [output_dir]/tmp/taxonomy_nexus.txt -c config.yaml```
 - The following folders will be created inside output dir
   - ```fasttree``` phylogenetic results in newick format for each group
   - ```fasttree_nexus``` phylogenetic results in nexus format for each group. These are best for visualisation with the a tree viewer program like FigTree
@@ -125,7 +125,7 @@ Prokaryota	Bacteria;Archaea
 Viriods	Viroids
 Viruses	Viruses
 ```
-- ```classify_trees.py -i [output_dir]/fasttree_nexus/ -t [output_dir]/fasttree_tree_results.txt -f [classification.file] -c config.yaml -o [output_dir]```
+- ```avp classify -i [output_dir]/fasttree_nexus/ -t [output_dir]/fasttree_tree_results.txt -f [classification.file] -c config.yaml -o [output_dir]```
 - The following folders will be created inside output dir
   - ```classification``` Inside the folder are folders based on the classification file. Each folder contains the nexus for each gene classfied as such.
 - The following file will be created inside output dir
@@ -133,7 +133,7 @@ Viruses	Viruses
   - ```classification_tree_results.txt``` shows the result for each protein
 
 #### Test alternative topology
-- ```test_alt_topology.py -i [output_dir]/mafftgroups/ -t [output_dir]/fasttree_tree_results.txt -m fasttree -o [output_dir] -x 2```
+- ```avp evaluate -i [output_dir]/mafftgroups/ -t [output_dir]/fasttree_tree_results.txt -o [output_dir] -c config.yaml```
 - The following folders will be created inside output dir
   - ```alt_topology``` Contains all intermediate files for the phylogenetic analyses
 - The following file will be created inside output dir

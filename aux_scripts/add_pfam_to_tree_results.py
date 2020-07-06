@@ -9,7 +9,6 @@
         -p, --pfam_results <FILE>   pfam results file from hmmer3
         -t, --tree_results <FILE>   tree results file
         -e, --evalue_cutoff <STR>   evalue_cutoff [default: 1e-5]
-        --version                   print version
 """
 
 import os
@@ -18,7 +17,7 @@ from docopt import docopt
 
 def main():
 
-    args = docopt(__doc__,version='1.00')
+    args = docopt(__doc__)
     pfam_file = args['--pfam_results']
     tree_results_file = args['--tree_results']
     evalue_cutoff = args['--evalue_cutoff']

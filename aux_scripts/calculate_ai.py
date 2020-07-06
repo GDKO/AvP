@@ -8,7 +8,6 @@
         -i, --input <FILE>          outfmt format 6 file in the following format std + taxid
         -g, --tax_groups <FILE>     file specifying taxonomic groups (ingroup, exclude)
         -h, --help                  show this
-        --version                   print version
 """
 
 import sys
@@ -23,7 +22,7 @@ from docopt import docopt
 from depot.PetIO import open_file
 
 def main():
-    args = docopt(__doc__,version='0.9.0')
+    args = docopt(__doc__)
 
     input_file = args['--input']
     groups_yaml = args['--tax_groups']

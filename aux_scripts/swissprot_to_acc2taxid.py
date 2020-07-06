@@ -7,7 +7,6 @@
   Options:
     -h, --help                    show this
     -i, --input <FILE>             folder with aligned fasta files
-    --version                     print version
 """
 
 import sys
@@ -21,7 +20,7 @@ from docopt import docopt
 from depot.PetIO import open_file
 
 def main():
-    args = docopt(__doc__,version='0.9.0')
+    args = docopt(__doc__)
     input_file = args['--input']
 
 

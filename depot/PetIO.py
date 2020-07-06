@@ -55,6 +55,16 @@ def open_file(fname):
     else:
         return open(fname,'r')
 
+# Get number of jobs
+def get_num_jobs(fastml,threads,iq_threads):
+    if fastml:
+        jobs = int(threads)
+    else:
+        jobs = int(threads/iq_threads)
+    if not jobs:
+        jobs = 1
+    return jobs
+
 # Run FastTree
 def run_fasttree(t_list):
     fasttree_params = t_list[0]

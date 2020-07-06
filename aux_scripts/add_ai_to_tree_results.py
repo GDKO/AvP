@@ -8,7 +8,6 @@
         -h, --help                  show this
         -a, --aifeatures <FILE>     alienness features file
         -t, --tree_results <FILE>   tree results file
-        --version                   print version
 """
 
 import os
@@ -17,7 +16,7 @@ from docopt import docopt
 
 def main():
 
-    args = docopt(__doc__,version='0.9.0')
+    args = docopt(__doc__)
     ai_features = args['--aifeatures']
     tree_results_file = args['--tree_results']
 

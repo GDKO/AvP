@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-"""add_pfam_to_tree_results.py
-    Usage: add_pfam_to_tree_results.py -t <FILE> [-a <INT>]
+"""create_recall_plots.py
+    Usage: create_recall_plots.py -t <FILE> [-a <INT>]
 
     Options:
         -h, --help                  show this
         -t, --tree_results <FILE>   tree results file
         -a, --ai_max <INT>          maximum ai for last column [default: 31]
-        --version                   print version
 """
 
 
@@ -20,7 +19,7 @@ import matplotlib.pyplot as plt
 
 def main():
 
-    args = docopt(__doc__,version='1.00')
+    args = docopt(__doc__)
     tree_results_file = args['--tree_results']
     ai_max = int(args['--ai_max'])
 
