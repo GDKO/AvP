@@ -59,11 +59,11 @@ EGP:
 
 ```
 ---
-max_threads: 2
+max_threads: 4
 
 # DB path
 nr_db_path: [nr]
-sp_fasta_path: [swissprot.fasta]
+sp_fasta_path: [uniprot_sprot.fasta]
 
 ## Algorithm options
 # prepare
@@ -74,8 +74,8 @@ threads: 2
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
 percentage_similar_hits: 0.7  # group queries based on this
-mode: nr    # use nr for nr database, use sp for swissprot database
-# evaluate, clasify
+mode: sp    # use nr for nr database, use sp for swissprot database
+# detect, clasify, evaluate
 fastml: true  # Use fasttree instead of IQTree
 node_support: 0  # nodes below that number will collapse
 complex_per_toi: 20   # if H/(H+T) smaller than this then node is considered T
@@ -90,6 +90,7 @@ trimal_options: '-automated1'
 iqmodel: '-mset WAG,LG,JTT -AICc -mrate E,I,G,R'
 ufbootstrap: 1000
 iq_threads: 4
+
 ```
 
 #### Prepare files for downstream analyses

@@ -2,8 +2,8 @@
 max_threads: 4
 
 # DB path
-nr_db_path: nr
-sp_fasta_path: uniprot_sprot.fasta
+nr_db_path: [nr]
+sp_fasta_path: [uniprot_sprot.fasta]
 
 ## Algorithm options
 # prepare
