@@ -70,7 +70,6 @@ sp_fasta_path: [uniprot_sprot.fasta]
 ai_cutoff: 0
 percent_identity: 100
 cutoffextend: 20    # when toi hit is found, we take this hit + n hits
-threads: 2
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
 percentage_similar_hits: 0.7  # group queries based on this
