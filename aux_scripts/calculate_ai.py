@@ -57,6 +57,9 @@ def main():
             evalue = elements[10]
             bitscore = elements[11]
             taxid = elements[-1]
+            if ";" in taxid:
+                first_id = taxid.split(";")[0] #get the first id from taxid if multiple
+                taxid = first_id
             if gene not in num_hits.keys():
                 num_hits[gene] = 0
             num_hits[gene] += 1
