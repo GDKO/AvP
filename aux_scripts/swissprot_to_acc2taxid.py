@@ -26,7 +26,7 @@ def main():
     mode = args['--mode']
 
 
-    if mode == "swissport":
+    if mode == "swissprot":
         db_re = re.compile("OX=\d*")
     elif mode == "uniref":
         db_re = re.compile("TaxID=\d*")
