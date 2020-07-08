@@ -37,7 +37,7 @@
     - ```diamond blastp -d [database.dmnd] --max-target-seqs 500 -q [proteins.fasta] --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids > [diamond.out]```
 
 #### Create AI features file with calculate_ai.py (for groups.yaml see next section)
-- ```calculate_ai.py -i [blast.out|diamond.out] -g groups.yaml```
+- ```calculate_ai.py -i [blast.out|diamond.out] -x groups.yaml```
 - It will create a file called \*\_ai.out
 
 ### Run AvP

@@ -2,11 +2,11 @@
 
 """calculate_ai.py
     Usage:
-        calculate_ai.py -i <FILE> -g <FILE>
+        calculate_ai.py -i <FILE> -x <FILE>
 
     Options:
         -i, --input <FILE>          outfmt format 6 file in the following format std + taxid
-        -g, --tax_groups <FILE>     file specifying taxonomic groups (ingroup, exclude)
+        -x, --tax_groups <FILE>     file specifying taxonomic groups (ingroup, exclude)
         -h, --help                  show this
 """
 
