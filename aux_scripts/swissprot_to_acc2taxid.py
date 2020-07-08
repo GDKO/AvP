@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-"""swissprot_to_acc2taxid.py
+"""
   Usage:
-    swissprot_to_acc2taxid.py -i <FILE>
+    swissprot_to_acc2taxid.py -i <FILE> -m <STR>
 
   Options:
     -h, --help                    show this
-    -i, --input <FILE>             folder with aligned fasta files
+    -i, --input <FILE>            folder with aligned fasta files
+    -m, --mode <STR>              mode, choose between swissprot or uniref
 """
 
 import sys
@@ -22,16 +23,22 @@ from depot.PetIO import open_file
 def main():
     args = docopt(__doc__)
     input_file = args['--input']
+    mode = args['--mode']
 
+
+    if mode == "swissport":
+        db_re = re.compile("OX=\d*")
+    elif mode == "uniref":
+        db_re = re.compile("TaxID=\d*")
+    else:
+        sys.exit(mode + " is not a valid mode")
 
     print("acc\tver\ttaxid")
-
-    swissprot_re = re.compile("OX=\d*")
 
     with open_file(input_file) as handle:
         for record in SeqIO.parse(handle,"fasta"):
             tr, id, tr = record.name.split("|")
-            tr, taxid = swissprot_re.search(record.description).group().split("=")
+            tr, taxid = db_re.search(record.description).group().split("=")
             print(id + "\t" + id + ".1" + "\t" + taxid)
 
 if __name__ == '__main__':
