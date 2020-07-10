@@ -39,6 +39,8 @@ def main():
         for record in SeqIO.parse(handle,"fasta"):
             tr, id, tr = record.name.split("|")
             tr, taxid = db_re.search(record.description).group().split("=")
+            if not taxid:
+                taxid = str(1)
             print(id + "\t" + id + ".1" + "\t" + taxid)
 
 if __name__ == '__main__':
