@@ -17,7 +17,7 @@
 - ~~Alieness server route~~
 - Alternate route
   - Run BLAST
-    - ```blastp -query [proteins.fasta] -db [nr] -seg no -evalue 1e-3 -outfmt '6 std staxids' -out [blast.out]```
+    - ```blastp -query [proteins.fasta] -db [nr] -seg no -evalue 1e-5 -outfmt '6 std staxids' -out [blast.out]```
 
 #### Make a diamond database from swissprot
 - Install diamond from (https://github.com/bbuchfink/diamond/releases)
@@ -34,7 +34,7 @@
 #### Using user-created databases
 - swissprot
   - Run diamond
-    - ```diamond blastp -d [database.dmnd] --max-target-seqs 500 -q [proteins.fasta] --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids > [diamond.out]```
+    - ```diamond blastp -d [database.dmnd] --max-target-seqs 500 -q [proteins.fasta] --evalue 1e-5 --outfmt 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids > [diamond.out]```
 
 #### Create AI features file with calculate_ai.py (for groups.yaml see next section)
 - ```calculate_ai.py -i [blast.out|diamond.out] -x groups.yaml```
