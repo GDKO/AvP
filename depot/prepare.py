@@ -143,11 +143,8 @@ def main():
                         toi_pos = 0
                     else:
                         toi_pos = int(L_toi[1])
-                    extend_pos = max(toi_pos,notoi_pos) + cutoffextend
-                    #select at least 50 if possible
-                    if extend_pos < 50:
-                        extend_pos = 50
-                    last_pos = min(extend_pos,int(row[i_nbhits]))
+                    #Select at least 50 hits
+                    last_pos = min(max(max(toi_pos,notoi_pos) + cutoffextend, 50), int(row[i_nbhits]))
                     queries_info[row[i_query]] = {'pos':last_pos}
                     query_dict_set[row[i_query]] = set()
 
