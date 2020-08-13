@@ -78,7 +78,13 @@ def analyze_tree(tree_filename, full_name_studied_gene, node_support, complex_pe
     # Load a tree structure from a newick file
     gene_tree = Tree(tree_filename,format=0)
 
+
     if node_support != 0:
+        node_supports = []
+        for node in gene_tree.traverse("preorder"):
+            node_supports.append(node.support)
+        if all(i <= 1 for i in node_supports):
+            node_support = node_support/100
         for node in gene_tree.traverse("preorder"):
             if "@" not in node.name:
                 if node.support < node_support:

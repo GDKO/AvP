@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 
-"""avp
+"""
+  Usage:
+    avp [<module>] [<args>...] [-h] [-v]
 
-    Usage:
-        avp [<module>] [<args>...] [-h] [-v]
+  Modules:
+    prepare         extract the candidates, prepare the groups, and perform MSA
+    detect          perform tree inference and detect HGT candidates
+    classify        classify genes in specific taxonomic categories
 
-    Modules:
-        prepare        extract the candidates, prepare the groups, and perform MSA
-        detect         perform tree inference and detect the results
-        classify       classify genes in specific taxonomic categories
+    evaluate        evaluate alternative topology
 
-        evaluate       evaluate altermative topology
-
-    Options
-        -h, --help      show this
-        -v, --version   show version number
+  Options
+    -h, --help      show this
+    -v, --version   show version number
 
     See 'avp <command> --help' for more information on a specific command.
 

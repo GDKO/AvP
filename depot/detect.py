@@ -124,7 +124,7 @@ def main():
 
     if trees:
         print ("[!] Skipping Tree Building...")
-        tree_path = get_outdir(output_dir, add_dir=trees)
+        tree_path = get_outdir(trees)
     else:
         if fastml:
             print ("[+] Reconstructing phylogenies with FastTree")
@@ -166,9 +166,9 @@ def main():
     """
     if trees:
         print ("[+] Analyzing " + trees + " results")
-        tree_nexus_path = get_outdir(output_dir, add_dir=trees+"_nexus")
-        t_res_path = os.path.join(output_dir, trees+"_tree_results.txt")
-        g_res_path = os.path.join(output_dir, trees+"_general_results.txt")
+        tree_nexus_path = get_outdir(output_dir, add_dir=trees_suffix+"_nexus")
+        t_res_path = os.path.join(output_dir, trees_suffix+"_tree_results.txt")
+        g_res_path = os.path.join(output_dir, trees_suffix+"_general_results.txt")
     elif fastml:
         print ("[+] Analyzing fasttree results")
         tree_nexus_path = get_outdir(output_dir, add_dir="fasttree_nexus")
