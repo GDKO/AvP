@@ -12,7 +12,6 @@
     -g, --groups <FILE>         file containing the groups
     -c, --config_file <FILE>    config file
     -t, --taxonomy <FILE>       gid-taxon file for adding lineage to nexus
-    -s, --support <FLOAT>       nodes below that number will collapse [default: 0]
     --trees <STR>               use pre-calulated trees stored in output_dir/STR
     --trees_suffix <STR>        suffix of the tree files
 """
