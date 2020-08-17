@@ -210,17 +210,20 @@ def main():
     fhw_setnrfa = open(setnrfa_path, 'w')
     setnrlog_path = os.path.join(tmp_folder,"setnr.log")
 
-    # Specific RegExp for SwissProt
-    swissprot_re = re.compile("OX=\d*")
-
     if mode == "nr":
         blastdbcmd_command = 'blastdbcmd -db '+ config_opts["nr_db_path"] + ' -dbtype prot -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setnrlog_path + ' -out ' + setnrfa_path
         subprocess.call(blastdbcmd_command, shell= True)
     else: # GK This is specific to SwissProt for now, have to test for UniProt in the future
+        if mode == "sp":
+            db_re = re.compile("OX=\d*")
+        elif mode == "ur90":
+            db_re = re.compile("TaxID=\d*")
+        else:
+            sys.exit(mode + " is not a valid mode")
         with open_file(config_opts["sp_fasta_path"]) as handle:
             for record in SeqIO.parse(handle,"fasta"):
                 if record.id in extract_hit_id_set:
-                    ox, taxid = swissprot_re.search(record.description).group().split("=")
+                    ox, taxid = db_re.search(record.description).group().split("=")
                     fhw_setnrfa.write(">" + record.id + "@" + taxid + "\n")
                     seq = str(record.seq)
                     fhw_setnrfa.write(seq + "\n")
@@ -252,6 +255,9 @@ def main():
     final_number_of_groups = 0
 
     group_dict = {}
+    number_of_lost_taxids = 0
+    number_of_lost_records = 0
+
     for subgraph in nx.connected_components(G):
 
         num_of_seqs_in_group = 0
@@ -265,9 +271,6 @@ def main():
             grouped_hits.extend(query_dict_set[q])
 
         grouped_hits = set(grouped_hits)
-
-        number_of_lost_taxids = 0
-        number_of_lost_records = 0
 
         if len(grouped_hits) >= min_num_hits:
             group_name_file = "gp" + str(group_id) + '.fa'
@@ -285,7 +288,10 @@ def main():
                     taxid = record_to_taxid[record_id]
                     try:
                         ncbi.get_lineage(taxid)
+                        taxid_found = True
                     except:
+                        taxid_found = False
+                    if not taxid or not taxid_found:
                         # actually print a file containing lost taxids
                         number_of_lost_taxids += 1
                         selectname = "Unknown"

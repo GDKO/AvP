@@ -13,7 +13,7 @@ cutoffextend: 20    # when toi hit is found, we take this hit + n hits
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
 percentage_similar_hits: 0.7  # group queries based on this
-mode: sp    # use nr for nr database, use sp for swissprot database
+mode: sp    # use nr for nr database, use sp for swissprot database, ur90 for uniref90
 # detect, clasify, evaluate
 fastml: true  # Use fasttree instead of IQTree
 node_support: 0  # nodes below that number will collapse
