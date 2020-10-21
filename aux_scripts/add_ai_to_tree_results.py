@@ -26,7 +26,7 @@ def main():
     for line in ai_file:
         line = line = line.rstrip('\n')
         line_columns = line.split('\t')
-        ai[line_columns[2]]=line_columns[0]
+        ai[line_columns[0]]=line_columns[3]
 
     t_file = open(tree_results_file,'r')
     t_ai_file_path = tree_results_file + ".ai.txt"
@@ -34,7 +34,7 @@ def main():
     for line in t_file:
         line = line.rstrip('\n')
         line_columns = line.split('\t')
-        t_ai_file.write(line + '\t' + str(ai[line_columns[2]]) + '\n')
+        t_ai_file.write(line + '\t' + str(ai[line_columns[3]]) + '\n')
 
     t_ai_file.close()
 

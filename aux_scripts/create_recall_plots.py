@@ -8,13 +8,14 @@
     Options:
         -h, --help                  show this
         -t, --tree_results <FILE>   tree results file
-        -a, --ai_max <INT>          maximum ai for last column [default: 31]
+        -a, --ai_max <INT>          maximum ai for last column [default: 40]
 """
 
 
 from docopt import docopt
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def main():
@@ -23,77 +24,67 @@ def main():
     tree_results_file = args['--tree_results']
     ai_max = int(args['--ai_max'])
 
-    y_data = list(range(ai_max))
-    list_hgts_wtoi = [0] * ai_max
-    list_hgts_all = [0] * ai_max
-    list_others = [0] * ai_max
-    list_per_complex = [0] * ai_max
-    list_per_no = [0] * ai_max
-
-    types = {}
-    ais = {}
-    num_hgts_wtoi = 0
-    num_hgts_all = 0
-    num_others = 0
     t_file = open(tree_results_file,'r')
+    ai_list = []
+    hgt_list = []
     for line in t_file:
         line = line.rstrip('\n')
-        type, tree, gene, ai = line.split('\t')
-        ai = float(ai)
-        types[gene]=type
-        if ai > ai_max:
-            ai = ai_max
-        ais[gene]=ai
+        line_columns = line.split('\t')
+        ai = float(line_columns[4])
+        ai_list.append(ai)
+        if "HGT" in line_columns[0]: # and "HGT-NT" not in line_columns[0]:
+            hgt_list.append(ai)
 
-        if type == "HGT":
-            num_hgts_wtoi += 1
-            num_hgts_all += 1
-            for i in range(0,math.ceil(ai),1):
-                list_hgts_wtoi[i]+=1
-                list_hgts_all[i]+=1
+    ai_group_list = []
+    hgt_group_list = []
+    for ai in range(0,ai_max+1):
+        ai_group_list.append(sum(i >= ai for i in ai_list))
+        hgt_group_list.append(sum(i >= ai for i in hgt_list))
 
-        elif type == "HGT-NT":
-            num_hgts_all += 1
-            for i in range(0,math.ceil(ai),1):
-                list_hgts_all[i]+=1
+    f1_list = []
+    ppv_list = []
+    sen_list = []
+    diff_list = []
+    for ai in range(0,ai_max+1):
+        f1_score = 2*hgt_group_list[ai]/(hgt_group_list[0]+ai_group_list[ai])
+        ppv_score = hgt_group_list[ai]/ai_group_list[ai]
+        sen_score = hgt_group_list[ai]/hgt_group_list[0]
+        f1_list.append(f1_score)
+        ppv_list.append(ppv_score)
+        sen_list.append(sen_score)
+        diff_list.append(abs(ppv_score-sen_score))
 
-        elif type == "COMPLEX":
-            for i in range(0,math.ceil(ai),1):
-                list_others[i]+=1
-                list_per_complex[i]+=1
-        else:
-            for i in range(0,math.ceil(ai),1):
-                list_others[i]+=1
-                list_per_no[i]+=1
-    # For wtoi
-    sen_hgts_wtoi = [(x * 100) / num_hgts_wtoi for x in list_hgts_wtoi]
-    spe_hgts_wtoi_cons = [ x + z for x,z in zip(list_hgts_wtoi,list_others)]
-    spe_hgts_wtoi = [(x * 100) / z for x ,z in zip(list_hgts_wtoi,spe_hgts_wtoi_cons)]
 
-    # For all
-    sen_hgts_all = [(x * 100) / num_hgts_all for x in list_hgts_all]
-    spe_hgts_all_cons = [ x + z for x,z in zip(list_hgts_all,list_others)]
-    spe_hgts_all = [(x * 100) / z for x ,z in zip(list_hgts_all,spe_hgts_all_cons)]
-
-    #Per complex
-    per_complex = [(x * 100) / z for x ,z in zip(list_per_complex,spe_hgts_all_cons)]
-    per_no = [(x * 100) / z for x ,z in zip(list_per_no,spe_hgts_all_cons)]
+    max_f1 = f1_list.index(max(f1_list))
 
     out_fig = tree_results_file + ".pdf"
-    plt.plot(sen_hgts_wtoi,label="Sensitivity w TOI")
-    plt.plot(spe_hgts_wtoi,label="Specificity w TOI")
-    plt.plot(sen_hgts_all,label="Sensitivity All")
-    plt.plot(spe_hgts_all,label="Specificity All")
-    plt.plot(per_complex,label="Percentage Complex")
-    plt.plot(per_no,label="Percentage No HGTs")
-    plt.xlabel("AI index")
-    plt.ylabel("Percentage")
-    plt.legend()
-    plt.savefig(out_fig)
-    plt.clf()
-    plt.cla()
-    plt.close()
+    #plt.plot(ppv_list,label="Precision",color="red")
+    #plt.plot(sen_list,label="Sensitivity",color="orange")
+    #plt.plot(f1_list,label="F1 score",color="green")
+    #plt.vlines(max_f1,ppv_list[0],1,color="green",linestyles="dashed")
+    #plt.xlabel("AI index")
+    #plt.set_xticks("11")
+    #plt.legend()
+    #plt.savefig(out_fig)
+    #plt.clf()
+    #plt.cla()
+    #plt.close()
 
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(ppv_list,label="Precision",color="red")
+    ax.plot(sen_list,label="Sensitivity",color="orange")
+    ax.plot(f1_list,label="F1 score",color="green")
+    ax.vlines(max_f1,ppv_list[0],1,color="green",linestyles="dashed",linewidth=1)
+    ax.set(xlabel='AI index')
+    plt.xticks(fontsize=6)
+    plt.yticks(fontsize=6)
+    x0, x1 = ax.get_xlim()
+    visible_ticks = [t for t in ax.get_xticks() if t>=x0 and t<=x1]
+    x_ticks = np.append(visible_ticks, max_f1)
+    ax.set_xticks(x_ticks)
+    ax.legend()
+    fig.savefig(out_fig)
 
 
 if __name__ == '__main__':

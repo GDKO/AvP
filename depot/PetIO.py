@@ -92,7 +92,6 @@ def fix_iqtree(fname):
     file.close()
 
 # Progress bar woohoo!
-
 def progress(iteration, steps, max_value, no_limit=False):
     if int(iteration) == max_value:
         if no_limit == True:
