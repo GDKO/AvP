@@ -54,7 +54,7 @@ def main():
         sen_list.append(sen_score)
         diff_list.append(abs(ppv_score-sen_score))
 
-
+    print(ppv_list)
     max_f1 = f1_list.index(max(f1_list))
 
     out_fig = tree_results_file + ".pdf"
