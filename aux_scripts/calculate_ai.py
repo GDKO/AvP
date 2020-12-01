@@ -90,10 +90,10 @@ def main():
                         best_hit_ntoi[gene]["bitscore"] = bitscore
 
     for gene in set(list_genes):
-        toi_evalue = 1
-        ntoi_evalue = 1
+        
         if gene not in best_hit_toi.keys():
             toi_str = "::::"
+            toi_evalue = 1
             toi_bitscore = 0
         else:
             toi_str = best_hit_toi[gene]["hit"] + ":" + best_hit_toi[gene]["pos"] + ":" + best_hit_toi[gene]["iden"] + ":" + best_hit_toi[gene]["evalue"] + ":" + best_hit_toi[gene]["bitscore"]
@@ -102,6 +102,7 @@ def main():
 
         if gene not in best_hit_ntoi.keys():
             ntoi_str = "::::"
+            ntoi_evalue = 1
             ntoi_bitscore = 0
         else:
             ntoi_str = best_hit_ntoi[gene]["hit"] + ":" + best_hit_ntoi[gene]["pos"] + ":" + best_hit_ntoi[gene]["iden"] + ":" + best_hit_ntoi[gene]["evalue"] + ":" + best_hit_ntoi[gene]["bitscore"]
