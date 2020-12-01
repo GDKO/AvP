@@ -127,9 +127,10 @@ def main():
         for row in reader:
             # Get index col
             i_query = row.index('query name')
-            i_notoi = row.index('NO-TOI')
-            i_toi = row.index('TOI')
+            i_notoi = row.index('donor')
+            i_toi = row.index('recipient')
             i_ai = row.index('AI')
+            i_hgt = row.index('HGTscore')
             i_nbhits = row.index('query hits number')
             break
 

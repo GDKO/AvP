@@ -45,7 +45,7 @@ def main():
     best_hit_ntoi = {}
     num_hits = {}
 
-    outout_file.write("query name\tNO-TOI\tTOI\tAI\tquery hits number\n")
+    outout_file.write("query name\tdonor\trecipient\tAI\tHGTscore\tquery hits number\n")
 
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
@@ -94,18 +94,23 @@ def main():
         ntoi_evalue = 1
         if gene not in best_hit_toi.keys():
             toi_str = "::::"
+            toi_bitscore = 0
         else:
             toi_str = best_hit_toi[gene]["hit"] + ":" + best_hit_toi[gene]["pos"] + ":" + best_hit_toi[gene]["iden"] + ":" + best_hit_toi[gene]["evalue"] + ":" + best_hit_toi[gene]["bitscore"]
             toi_evalue = float(best_hit_toi[gene]["evalue"])
+            toi_bitscore = float(best_hit_toi[gene]["bitscore"])
 
         if gene not in best_hit_ntoi.keys():
             ntoi_str = "::::"
+            ntoi_bitscore = 0
         else:
             ntoi_str = best_hit_ntoi[gene]["hit"] + ":" + best_hit_ntoi[gene]["pos"] + ":" + best_hit_ntoi[gene]["iden"] + ":" + best_hit_ntoi[gene]["evalue"] + ":" + best_hit_ntoi[gene]["bitscore"]
             ntoi_evalue = float(best_hit_ntoi[gene]["evalue"])
+            ntoi_bitscore = float(best_hit_ntoi[gene]["bitscore"])
 
         ai = calculate_ai(toi_evalue,ntoi_evalue)
-        outout_file.write(gene + "\t" + ntoi_str + "\t" + toi_str + "\t" + str(ai) + "\t" + str(num_hits[gene])+"\n")
+        hgt_score = ntoi_bitscore - toi_bitscore
+        outout_file.write(gene + "\t" + ntoi_str + "\t" + toi_str + "\t" + str(ai) + "\t" + str(hgt_score) + "\t" + str(num_hits[gene])+"\n")
 
     outout_file.close()
 
