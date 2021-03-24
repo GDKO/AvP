@@ -130,13 +130,13 @@ def main():
             i_notoi = row.index('donor')
             i_toi = row.index('recipient')
             i_ai = row.index('AI')
-            i_hgt = row.index('HGTscore')
+            i_hgt = row.index('HGTindex')
             i_nbhits = row.index('query hits number')
             break
 
         for row in reader:
-            L_notoi = row[i_notoi].rstrip('\n').split(':')
-            L_toi = row[i_toi].rstrip('\n').split(':')
+            L_notoi = row[i_notoi].rstrip('\n').rsplit(':',4)
+            L_toi = row[i_toi].rstrip('\n').rsplit(':',4)
             if (row[i_notoi] != '::::'): #Skipping hits with only TOI
                 if (float(row[i_nbhits])>= min_num_hits and float(L_notoi[2]) <= percent_identity and float(row[i_ai])>=ai_cutoff):
                     notoi_pos = int(L_notoi[1])

@@ -45,7 +45,7 @@ def main():
     best_hit_ntoi = {}
     num_hits = {}
 
-    outout_file.write("query name\tdonor\trecipient\tAI\tHGTscore\tquery hits number\n")
+    outout_file.write("query name\tdonor\trecipient\tAI\tHGTindex\tquery hits number\n")
 
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
