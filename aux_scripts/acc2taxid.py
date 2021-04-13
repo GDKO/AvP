@@ -2,7 +2,7 @@
 
 """
   Usage:
-    swissprot_to_acc2taxid.py -i <FILE> -m <STR>
+    acc2taxid.py -i <FILE> -m <STR>
 
   Options:
     -h, --help                    show this
@@ -33,15 +33,18 @@ def main():
     else:
         sys.exit(mode + " is not a valid mode")
 
-    print("acc\tver\ttaxid")
+    print("accession.version\ttaxid")
 
     with open_file(input_file) as handle:
         for record in SeqIO.parse(handle,"fasta"):
-            tr, id, tr = record.name.split("|")
+            if mode == "swissprot":
+                tr, id, tr = record.name.split("|")
+            elif mode == "uniref":
+                tr, id = record.name.split("|")
             tr, taxid = db_re.search(record.description).group().split("=")
             if not taxid:
-                taxid = str(1)
-            print(id + "\t" + id + ".1" + "\t" + taxid)
+                taxid = 1
+            print(id + "\t" + str(taxid))
 
 if __name__ == '__main__':
     main()
