@@ -178,7 +178,7 @@ def main():
 
     alt_res_path = os.path.join(output_dir, "alt_topology_results.tsv")
     alt_res = open(alt_res_path,'w')
-    alt_res.write("#gene"+ "\t" +"deltaL"+ "\t" + "bp-RELL" + "\t" +"p-KH"+ "\t" + "p-SH"+ "\t" + "c-ELW" + "\t" +"c-ELW"+ "\t" + "Significantly worse" + "\n")
+    alt_res.write("#gene"+ "\t" +"deltaL"+ "\t" + "bp-RELL" + "\t" +"p-KH"+ "\t" + "p-SH"+ "\t" + "c-ELW" + "\t" +"p-AU"+ "\t" + "Significantly worse" + "\n")
     #Create final file
     for gene in selected_genes:
         if fastml:
