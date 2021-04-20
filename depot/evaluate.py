@@ -89,6 +89,7 @@ def main():
         if str(type[gene]) == "HGT":
 
             selected_genes.append(gene)
+            
             toi = ["EGP", "TOI"]
             toi.append(gene)
             filename = alignment[gene]
@@ -167,6 +168,7 @@ def main():
     for con_tree in con_tree_list:
         concatenate_trees(con_tree)
 
+
     #Add jobs for iqtree
     jobs = get_num_jobs(False, threads, iq_threads)
     p = Pool(jobs)
@@ -178,23 +180,29 @@ def main():
 
     alt_res_path = os.path.join(output_dir, "alt_topology_results.tsv")
     alt_res = open(alt_res_path,'w')
-    alt_res.write("#gene"+ "\t" +"deltaL"+ "\t" + "bp-RELL" + "\t" +"p-KH"+ "\t" + "p-SH"+ "\t" + "c-ELW" + "\t" +"p-AU"+ "\t" + "Significantly worse" + "\n")
+    alt_res.write("#gene"+ "\t" +"deltaL" + "\t" + "p-AU"+ "\t" + "Significantly worse" + "\n")
     #Create final file
     for gene in selected_genes:
+
         if fastml:
-            p=subprocess.Popen("grep -P 'logL\s*del' -A 2 " + out_path + "/" + gene + "*fasttree.iqtree | tail -1", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            file = out_path + "/" + gene + ".fasttree.iqtree"
         else:
-            p=subprocess.Popen("grep -P 'logL\s*del' -A 2 " + out_path + "/" + gene + "*treefile.iqtree | tail -1", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        target_line = p.stdout.read().decode('utf').split()
-        deltaL = target_line[2]
-        ns = []
-        pvalue = []
-        for i in range(4,len(target_line),2):
-            ns.append(target_line[i])
-        significantly_worse = ns.count("-")
-        for i in range(3,len(target_line),2):
-            pvalue.append(target_line[i])
-        alt_res.write(gene + "\t" + deltaL + "\t" + '\t'.join(pvalue) + "\t" + str(significantly_worse)+"\n")
+            file = out_path + "/" + gene + ".treefile.iqtree"
+
+        with open(file) as f:
+            content = f.readlines()
+
+        for i, line in enumerate(content):
+            if "USER TREES" in line:
+                tree_1 = content[i+7].split()
+                tree_2 = content[i+8].split()
+        deltaL = float(tree_1[2])-float(tree_2[2])
+        au=tree_1[9]
+        if tree_1[10] == "-":
+            sf=1
+        else:
+            sf =0
+        alt_res.write(gene + "\t" + str(deltaL) + "\t" + str(au) + "\t" + str(sf)+"\n")
 
     alt_res.close()
 
