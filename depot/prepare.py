@@ -182,7 +182,7 @@ def main():
                 for i in range(1,len(members),1):
                     G.add_node(members[i])
                     if i>1:
-                        G.add_edge(members[i], members[-i])
+                        G.add_edge(members[i], members[i-1])
         print ("[!] Found " + str(num_groups) + " groups")
 
     else:
