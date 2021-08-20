@@ -63,6 +63,12 @@ def main():
     node_support = config_opts["node_support"]
     complex_per = [config_opts["complex_per_toi"],config_opts["complex_per_hgt"]]
 
+    #Check programs
+    if fastml:
+        check_programs("fasttree")
+    else:
+        check_programs("iqtree")
+
     # IQ-TREE parameters
     iq_threads = config_opts["iq_threads"]
     iqmodel = config_opts["iqmodel"]

@@ -97,12 +97,14 @@ def analyze_tree(tree_filename, full_name_studied_gene, node_support, complex_pe
     for node in gene_tree:
         if "@TOI" in str(node):
             no_TOI = False
-        elif "EGP" not in str(node) or "StudiedOrganism" not in str(node):
+        elif "EGP" not in str(node) and "StudiedOrganism" not in str(node) and "Unknown" not in str(node) and "Other" not in str(node) and "Unclassified" not in str(node):
             only_TOI = False
 
+    if only_TOI and not no_TOI:
+        return "only_TOI"
 
     if only_TOI:
-        return "only_TOI"
+        return "unknown_topology"
 
     if no_TOI:
         return "no_TOI"
