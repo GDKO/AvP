@@ -1,5 +1,5 @@
 #rank members
-NM_Eukaryota	Eukaryota;Viridiplantae;Fungi
+NM_Eukaryota	Eukaryota;Viridiplantae;Fungi;Oomycota
 Prokaryota	Bacteria;Archaea
 Viriods	Viroids
 Viruses	Viruses
