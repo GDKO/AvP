@@ -60,10 +60,10 @@ def main():
         line = line.rstrip('\n')
         line_columns = line.split('\t')
         gene = line_columns[3]
-        gene_to_test.append(gene)
         orig_tree_lines[gene] = line
         if line_columns[0] == "HGT-NT" or line_columns[0] == "HGT":
             gene_classification[gene] = "H"
+            gene_to_test.append(gene)
         elif line_columns[0] == "NO" or line_columns[0] == "NO-OT":
             gene_classification[gene] = "N"
         elif line_columns[0] == "COMPLEX":
