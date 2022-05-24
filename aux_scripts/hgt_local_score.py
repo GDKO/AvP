@@ -126,12 +126,17 @@ def get_classification_string(gene_classification,nearby_genes):
     return result_string
 
 def contamination_score(close_string,k_value):
-    N_score = (1/(2*k_value))
-    H_score = -(1/(2*k_value))
+    prox_count = len(close_string)
+    f_value = 1
+    if prox_count != 0:
+        n=(prox_count-(2*k_value))/(2*k_value)
+        f_value = math.exp(n)
+    N_score = (1/(2*k_value*f_value))
+    H_score = -(1/(2*k_value*f_value))
     C_score = 0.0
-    U_score = 0.1/k_value
-    P_score = -(0.2/k_value)
-    L_score = -(0.1/k_value)
+    U_score = 0.1/(k_value*f_value)
+    P_score = -(0.2/(k_value*f_value))
+    L_score = -(0.1/(k_value*f_value))
 
     N_count = close_string.count('N')*N_score
     C_count = close_string.count('C')*C_score
