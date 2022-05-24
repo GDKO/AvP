@@ -17,6 +17,7 @@
 import os
 import sys
 import re
+import math
 from docopt import docopt
 
 depot_path = os.path.join(sys.path[0], "../")
