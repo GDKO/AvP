@@ -166,11 +166,11 @@ def main():
                 query_id = L_hitqline[0]
                 if query_id in queries_info.keys(): # Queries that pass the initial selection
                     if(len(query_dict_set[query_id]) <= queries_info[query_id]["pos"]):
+                        query_hit_id = L_hitqline[1]
                         if "@" in query_id:
                             sys.exit("@ symbol is not allowed: " + query_id)
                         if "@" in query_hit_id:
                             sys.exit("@ symbol is not allowed: " + query_hit_id)
-                        query_hit_id = L_hitqline[1]
                         extract_hit_id_set.add(query_hit_id)
                         query_dict_set[query_id].add(query_hit_id) # GK
 
