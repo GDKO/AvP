@@ -197,8 +197,8 @@ def main():
                 tree_1 = content[i+7].split()
                 tree_2 = content[i+8].split()
         deltaL = float(tree_1[2])-float(tree_2[2])
-        au=tree_1[9]
-        if tree_1[10] == "-":
+        au=tree_1[11]
+        if tree_1[12] == "-":
             sf=1
         else:
             sf =0
