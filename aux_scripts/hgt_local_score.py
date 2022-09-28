@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """closest_genes.py
-    Usage: closest_genes.py -f <FILE> -a <FILE> -t <FILE> -m <INT> [-k <INT>]
+    Usage: hgt_local_score.py -f <FILE> -a <FILE> -t <FILE> -m <INT> [-k <INT>]
 
     Options:
         -h, --help                  show this
