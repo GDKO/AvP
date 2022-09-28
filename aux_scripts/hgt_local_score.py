@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""closest_genes.py
+"""hgt_local_score.py
     Usage: hgt_local_score.py -f <FILE> -a <FILE> -t <FILE> -m <INT> [-k <INT>]
 
     Options:
