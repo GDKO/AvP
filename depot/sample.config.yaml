@@ -9,7 +9,7 @@ mode: sp    # use nr for nr database, use sp for swissprot database, ur90 for un
 ## Algorithm options
 # prepare
 ai_cutoff: 0
-percent_identity: 100
+percent_identity: 100   # select hits equal or below this number
 cutoffextend: 20    # when toi hit is found, we take this hit + n hits
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
