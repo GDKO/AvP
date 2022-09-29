@@ -225,7 +225,7 @@ def main():
             db_re = re.compile("TaxID=\d*")
         else:
             sys.exit(mode + " is not a valid mode")
-        with open_file(config_opts["sp_fasta_path"]) as handle:
+        with open_file(config_opts["fasta_path"]) as handle:
             for record in SeqIO.parse(handle,"fasta"):
                 if record.id in extract_hit_id_set:
                     ox, taxid = db_re.search(record.description).group().split("=")
