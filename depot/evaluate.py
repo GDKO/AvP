@@ -54,7 +54,7 @@ def main():
 
     p = Pool(jobs)
 
-    # TOI, Gene, Exclude [1]
+    # Ingroup, Gene, Exclude [1]
     # Unknown, Rest of Genes [-] means freely
     # Rest [0]
 
@@ -89,19 +89,19 @@ def main():
         if str(type[gene]) == "HGT":
 
             selected_genes.append(gene)
-            
-            toi = ["EGP", "TOI"]
-            toi.append(gene)
+
+            ingroup = ["EGP", "Ingroup"]
+            ingroup.append(gene)
             filename = alignment[gene]
 
-            toi_list = []
+            ingroup_list = []
             free_list = []
             rest_list = []
 
             with open_file(filename) as handle:
                 for record in SeqIO.parse(handle,"fasta"):
-                    if any(n in record.id for n in toi):
-                        toi_list.append(record.id)
+                    if any(n in record.id for n in ingroup):
+                        ingroup_list.append(record.id)
                     elif "Unknown" in record.id or "StudiedOrganism" in record.id:
                         free_list.append(record.id)
                     else:
@@ -116,9 +116,9 @@ def main():
 
             if fastml:
                 # Constaint file for FastTree
-                total = len(toi_list) + len(free_list) + len(rest_list)
+                total = len(ingroup_list) + len(free_list) + len(rest_list)
                 con.write(" " + str(total) +" 1\n")
-                for gene_l in toi_list:
+                for gene_l in ingroup_list:
                     con.write(gene_l + " 1\n")
                 for gene_l in free_list:
                     con.write(gene_l + " -\n")
@@ -139,9 +139,9 @@ def main():
 
             else:
                 # Constaint file for IqTree
-                toi_list = [w.replace('@', '_') for w in toi_list]
+                ingroup_list = [w.replace('@', '_') for w in ingroup_list]
                 rest_list = [w.replace('@', '_') for w in rest_list]
-                con.write("((" + ', '.join(toi_list) + ")," + "" + ', '.join(rest_list) + ");" + "\n")
+                con.write("((" + ', '.join(ingroup_list) + ")," + "" + ', '.join(rest_list) + ");" + "\n")
                 con.close()
                 #IqTree Params
                 tree_pre = os.path.join(out_path,gene)

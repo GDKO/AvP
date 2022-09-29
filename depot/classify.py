@@ -71,10 +71,10 @@ def main():
             full_ranks.append(inside_rank)
 
     results["Complex"] = 0
-    results["TOI"] = 0
+    results["Ingroup"] = 0
     results["Unknown"] = 0
     complex_dir = get_outdir(out_path, add_dir= "Complex")
-    toi_dir = get_outdir(out_path, add_dir= "TOI")
+    ingroup_dir = get_outdir(out_path, add_dir= "Ingroup")
     unknown_dir = get_outdir(out_path, add_dir= "Unknown")
 
     tree = {}
@@ -97,9 +97,9 @@ def main():
             results["Complex"] +=1
             rank_results[gene] = "Complex"
         elif type[gene] == "NO" or type[gene] == "NO-OT":
-            shutil.copy(input_nexus_dir+gene+".nexus",toi_dir)
-            results["TOI"] += 1
-            rank_results[gene] = "TOI"
+            shutil.copy(input_nexus_dir+gene+".nexus",ingroup_dir)
+            results["Ingroup"] += 1
+            rank_results[gene] = "Ingroup"
         elif type[gene] == "UNKNOWN":
             shutil.copy(input_nexus_dir+gene+".nexus",unknown_dir)
             results["Unknown"] += 1

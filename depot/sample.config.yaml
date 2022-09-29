@@ -17,7 +17,7 @@ percentage_similar_hits: 0.7  # group queries based on this
 # detect, clasify, evaluate
 fastml: true  # Use fasttree instead of IQTree
 node_support: 0  # nodes below that number will collapse
-complex_per_toi: 20   # if H/(H+T) smaller than this then node is considered T
+complex_per_ingroup: 20   # if H/(H+T) smaller than this then node is considered T
 complex_per_hgt: 80   # if H/(H+T) greater than this then node is considered H
 complex_per_node: 90  # if node contains percent number of this category, it is assigned
 

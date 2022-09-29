@@ -80,7 +80,7 @@ def main():
     orgtag = "@StudiedOrganism"
 
     stream = open(groups_yaml, 'r')
-    toi_egp = yaml.safe_load(stream)
+    ingroup_egp = yaml.safe_load(stream)
     stream.close()
 
     if not cfg_file:
@@ -127,25 +127,25 @@ def main():
         for row in reader:
             # Get index col
             i_query = row.index('query name')
-            i_notoi = row.index('donor')
-            i_toi = row.index('recipient')
+            i_donor = row.index('donor')
+            i_ingroup = row.index('recipient')
             i_ai = row.index('AI')
             i_hgt = row.index('HGTindex')
             i_nbhits = row.index('query hits number')
             break
 
         for row in reader:
-            L_notoi = row[i_notoi].rstrip('\n').rsplit(':',4)
-            L_toi = row[i_toi].rstrip('\n').rsplit(':',4)
-            if (row[i_notoi] != '::::'): #Skipping hits with only TOI
-                if (float(row[i_nbhits])>= min_num_hits and float(L_notoi[2]) <= percent_identity and float(row[i_ai])>=ai_cutoff):
-                    notoi_pos = int(L_notoi[1])
-                    if(row[i_toi] == '::::'):
-                        toi_pos = 0
+            L_donor = row[i_donor].rstrip('\n').rsplit(':',4)
+            L_ingroup = row[i_ingroup].rstrip('\n').rsplit(':',4)
+            if (row[i_donor] != '::::'): #Skipping hits with only Ingroup
+                if (float(row[i_nbhits])>= min_num_hits and float(L_donor[2]) <= percent_identity and float(row[i_ai])>=ai_cutoff):
+                    donor_pos = int(L_donor[1])
+                    if(row[i_ingroup] == '::::'):
+                        ingroup_pos = 0
                     else:
-                        toi_pos = int(L_toi[1])
+                        ingroup_pos = int(L_ingroup[1])
                     #Select at least 50 hits
-                    last_pos = min(max(max(toi_pos,notoi_pos) + cutoffextend, 50), int(row[i_nbhits]))
+                    last_pos = min(max(max(ingroup_pos,donor_pos) + cutoffextend, 50), int(row[i_nbhits]))
                     queries_info[row[i_query]] = {'pos':last_pos}
                     query_dict_set[row[i_query]] = set()
 
@@ -306,15 +306,15 @@ def main():
                         #print(ncbi.get_rank(lnode)) Maybe try this with {1: 'no rank', 2: 'superkingdom'}
                         taxonomy_nexus.write(str(record_id)+"\t"+str(lname)+"\n")
 
-                        egp_hit = list(lnode.intersection(set(toi_egp["EGP"].keys())))
-                        toi_hit = list(lnode.intersection(set(toi_egp["TOI"].keys())))
+                        egp_hit = list(lnode.intersection(set(ingroup_egp["EGP"].keys())))
+                        ingroup_hit = list(lnode.intersection(set(ingroup_egp["Ingroup"].keys())))
                         cfg_hit = list(lnode.intersection(set(config_groups["Other"].keys())))
                         kdom_hit = list(lnode.intersection(set(config_groups["Kingdom"].keys())))
 
                         if egp_hit:
-                            selectname = "EGP-" + toi_egp["EGP"][egp_hit[0]]
-                        elif toi_hit:
-                            selectname = "TOI-" + toi_egp["TOI"][toi_hit[0]]
+                            selectname = "EGP-" + ingroup_egp["EGP"][egp_hit[0]]
+                        elif ingroup_hit:
+                            selectname = "Ingroup-" + ingroup_egp["Ingroup"][ingroup_hit[0]]
                         elif cfg_hit:
                             selectname = config_groups["Other"][cfg_hit[0]]
                         elif kdom_hit:

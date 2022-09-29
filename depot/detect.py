@@ -61,7 +61,7 @@ def main():
     threads = config_opts["max_threads"]
     fastml = config_opts["fastml"]
     node_support = config_opts["node_support"]
-    complex_per = [config_opts["complex_per_toi"],config_opts["complex_per_hgt"]]
+    complex_per = [config_opts["complex_per_ingroup"],config_opts["complex_per_hgt"]]
 
     #Check programs
     if fastml:
@@ -196,8 +196,8 @@ def main():
     unknown_count = 0
     complex_count = 0
     strong_hgt_count = 0
-    no_toi_count = 0
-    only_toi_count = 0
+    no_ingroup_count = 0
+    only_ingroup_count = 0
 
     i = 0
     for group in groups.keys():
@@ -217,9 +217,9 @@ def main():
             if (result_tree == result_nohgt):
                 no_hgt_count += 1
                 t_res.write("NO\t" + group_file + "\t" + phylogeny_file + "\t" + gene + "\n")
-            elif (result_tree == "only_TOI"):
+            elif (result_tree == "only_Ingroup"):
                 no_hgt_count += 1
-                only_toi_count += 1
+                only_ingroup_count += 1
                 t_res.write("NO-OT\t" + group_file + "\t" + phylogeny_file + "\t" + gene + "\n")
             elif (result_tree == result_unknown):
                 unknown_count += 1
@@ -230,9 +230,9 @@ def main():
             elif (result_tree == result_hgt):
                 strong_hgt_count += 1
                 t_res.write("HGT\t" + group_file + "\t" + phylogeny_file + "\t" + gene + "\n")
-            elif (result_tree == "no_TOI"):
+            elif (result_tree == "no_Ingroup"):
                 strong_hgt_count += 1
-                no_toi_count += 1
+                no_ingroup_count += 1
                 t_res.write("HGT-NT\t" + group_file + "\t" + phylogeny_file + "\t" + gene + "\n")
             else:
                 print("\t[!] FATAL ERROR: Code 1")
@@ -250,8 +250,8 @@ def main():
     # Final output file
     g_res = open(g_res_path,'w')
     g_res.write("Proteins analyzed\t: " + str(gene_number) + "\n")
-    g_res.write("Proteins with no TOI\t: " + str(no_toi_count) + "\n")
-    g_res.write("Proteins with only TOI\t: " + str(only_toi_count) + "\n")
+    g_res.write("Proteins with no Ingroup\t: " + str(no_ingroup_count) + "\n")
+    g_res.write("Proteins with only Ingroup\t: " + str(only_ingroup_count) + "\n")
     g_res.write("\n")
     g_res.write("Unknown Topology\t: " + str(unknown_count) + "\n")
     g_res.write("No HGT support\t\t: " + str(no_hgt_count) + "\n")

@@ -2,7 +2,7 @@
 FF2200:StudiedOrganism
 FF5500:EGP
 #Target
-FF8D00:TOI
+FF8D00:Ingroup
 #Other ranks
 00CC44:Bacteria
 00B389:Fungi

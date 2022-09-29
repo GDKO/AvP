@@ -34,19 +34,19 @@ def analyze_tree(tree_filename, full_name_studied_gene, node_support):
                 if node.support < node_support:
                     node.delete()
 
-    no_TOI = True
-    only_TOI = True
+    no_Ingroup = True
+    only_Ingroup = True
 
-    # Check if no_TOI or only_TOI to speed up calculations
+    # Check if no_Ingroup or only_Ingroup to speed up calculations
     for node in gene_tree:
-        if "@TOI" in str(node):
-            no_TOI = False
+        if "@Ingroup" in str(node):
+            no_Ingroup = False
         elif "EGP" not in str(node) or "StudiedOrganism" not in str(node):
-            only_TOI = False
+            only_Ingroup = False
 
 
-    if only_TOI:
-        return "only_TOI"
+    if only_Ingroup:
+        return "only_Ingroup"
 
     # Root the tree using the midpoint
     R = gene_tree.get_midpoint_outgroup()
@@ -99,7 +99,7 @@ def classify_nodes(gene_tree,full_name_studied_gene):
     # Label leaves
     for node in gene_tree.traverse("preorder"):
         if("@" in node.name):
-            if "@TOI" in node.name:
+            if "@Ingroup" in node.name:
                 node.name = node.name  + "@T"
             elif "@EGP" in node.name:
                 node.name = node.name  + "@E"
