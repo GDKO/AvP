@@ -32,11 +32,11 @@ def main():
     outout_file = open(outout_file_path,'w')
 
     stream = open(groups_yaml, 'r')
-    toi_egp = yaml.safe_load(stream)
+    ingroup_egp = yaml.safe_load(stream)
     stream.close()
 
-    toi_taxid=set(toi_egp["TOI"].keys())
-    egp_taxid=set(toi_egp["EGP"].keys())
+    ingroup_taxid=set(ingroup_egp["Ingroup"].keys())
+    egp_taxid=set(ingroup_egp["EGP"].keys())
     egp_taxid.add(2787823)
     egp_taxid.add(2787854)
 
@@ -45,13 +45,14 @@ def main():
     number_of_lost_taxids = 0
 
     list_genes = []
-    best_hit_toi = {}
-    best_hit_ntoi = {}
+    best_hit_ingroup = {}
+    best_hit_donor = {}
     num_hits = {}
-    sum_toi_bitscore = {} #GK_ahs
-    sum_ntoi_bitscore = {} #GK_ahs
-    set_taxid_ntoi = {} #GK_outg_pct
-    set_taxid_toi = {} #GK_outg_pct
+    sum_ingroup_bitscore = {} #GK_ahs
+    sum_donor_bitscore = {} #GK_ahs
+    set_taxid_ingroup = {} #GK_outg_pct
+    set_taxid_donor = {} #GK_outg_pct
+
 
     outout_file.write("query name\tdonor\trecipient\tAI\tHGTindex\tquery hits number\tAHS\toutg_pct\n")
 
@@ -70,10 +71,10 @@ def main():
                 taxid = first_id
             if gene not in num_hits.keys():
                 num_hits[gene] = 0
-                sum_toi_bitscore[gene] = [] #GK_ahs
-                sum_ntoi_bitscore[gene] = [] #GK_ahs
-                set_taxid_ntoi[gene] = set() #GK_outg_pct
-                set_taxid_toi[gene] = set() #GK_outg_pct
+                sum_ingroup_bitscore[gene] = [] #GK_ahs
+                sum_donor_bitscore[gene] = [] #GK_ahs
+                set_taxid_ingroup[gene] = set() #GK_outg_pct
+                set_taxid_donor[gene] = set() #GK_outg_pct
             num_hits[gene] += 1
             try:
                 ncbi.get_lineage(taxid)
@@ -84,74 +85,74 @@ def main():
                 lnode = set(ncbi.get_lineage(taxid))
                 if lnode.intersection(egp_taxid):
                     egp = 1
-                elif lnode.intersection(toi_taxid):
-                    sum_toi_bitscore[gene].append(float(bitscore)) #GK_ahs
-                    set_taxid_toi[gene].add(taxid) #GK_outg_pct
-                    if gene not in best_hit_toi.keys():
-                        best_hit_toi[gene] = {}
-                        best_hit_toi[gene]["hit"] = hit
-                        best_hit_toi[gene]["pos"] = str(num_hits[gene])
-                        best_hit_toi[gene]["iden"] = iden
-                        best_hit_toi[gene]["evalue"] = str(evalue)
-                        best_hit_toi[gene]["bitscore"] = bitscore
+                elif lnode.intersection(ingroup_taxid):
+                    sum_ingroup_bitscore[gene].append(float(bitscore)) #GK_ahs
+                    set_taxid_ingroup[gene].add(taxid) #GK_outg_pct
+                    if gene not in best_hit_ingroup.keys():
+                        best_hit_ingroup[gene] = {}
+                        best_hit_ingroup[gene]["hit"] = hit
+                        best_hit_ingroup[gene]["pos"] = str(num_hits[gene])
+                        best_hit_ingroup[gene]["iden"] = iden
+                        best_hit_ingroup[gene]["evalue"] = str(evalue)
+                        best_hit_ingroup[gene]["bitscore"] = bitscore
                 else:
-                    sum_ntoi_bitscore[gene].append(float(bitscore)) #GK_ahs
-                    set_taxid_ntoi[gene].add(taxid) #GK_outg_pct
-                    if gene not in best_hit_ntoi.keys():
-                        best_hit_ntoi[gene] = {}
-                        best_hit_ntoi[gene]["hit"] = hit
-                        best_hit_ntoi[gene]["pos"] = str(num_hits[gene])
-                        best_hit_ntoi[gene]["iden"] = iden
-                        best_hit_ntoi[gene]["evalue"] = str(evalue)
-                        best_hit_ntoi[gene]["bitscore"] = bitscore
+                    sum_donor_bitscore[gene].append(float(bitscore)) #GK_ahs
+                    set_taxid_donor[gene].add(taxid) #GK_outg_pct
+                    if gene not in best_hit_donor.keys():
+                        best_hit_donor[gene] = {}
+                        best_hit_donor[gene]["hit"] = hit
+                        best_hit_donor[gene]["pos"] = str(num_hits[gene])
+                        best_hit_donor[gene]["iden"] = iden
+                        best_hit_donor[gene]["evalue"] = str(evalue)
+                        best_hit_donor[gene]["bitscore"] = bitscore
 
     for gene in set(list_genes):
 
-        if gene not in best_hit_toi.keys():
-            toi_str = "::::"
-            toi_evalue = 1
-            toi_bitscore = 0
+        if gene not in best_hit_ingroup.keys():
+            ingroup_str = "::::"
+            ingroup_evalue = 1
+            ingroup_bitscore = 0
         else:
-            toi_str = best_hit_toi[gene]["hit"] + ":" + best_hit_toi[gene]["pos"] + ":" + best_hit_toi[gene]["iden"] + ":" + best_hit_toi[gene]["evalue"] + ":" + best_hit_toi[gene]["bitscore"]
-            toi_evalue = float(best_hit_toi[gene]["evalue"])
-            toi_bitscore = float(best_hit_toi[gene]["bitscore"])
+            ingroup_str = best_hit_ingroup[gene]["hit"] + ":" + best_hit_ingroup[gene]["pos"] + ":" + best_hit_ingroup[gene]["iden"] + ":" + best_hit_ingroup[gene]["evalue"] + ":" + best_hit_ingroup[gene]["bitscore"]
+            ingroup_evalue = float(best_hit_ingroup[gene]["evalue"])
+            ingroup_bitscore = float(best_hit_ingroup[gene]["bitscore"])
 
-        if gene not in best_hit_ntoi.keys():
-            ntoi_str = "::::"
-            ntoi_evalue = 1
-            ntoi_bitscore = 0
+        if gene not in best_hit_donor.keys():
+            donor_str = "::::"
+            donor_evalue = 1
+            donor_bitscore = 0
         else:
-            ntoi_str = best_hit_ntoi[gene]["hit"] + ":" + best_hit_ntoi[gene]["pos"] + ":" + best_hit_ntoi[gene]["iden"] + ":" + best_hit_ntoi[gene]["evalue"] + ":" + best_hit_ntoi[gene]["bitscore"]
-            ntoi_evalue = float(best_hit_ntoi[gene]["evalue"])
-            ntoi_bitscore = float(best_hit_ntoi[gene]["bitscore"])
+            donor_str = best_hit_donor[gene]["hit"] + ":" + best_hit_donor[gene]["pos"] + ":" + best_hit_donor[gene]["iden"] + ":" + best_hit_donor[gene]["evalue"] + ":" + best_hit_donor[gene]["bitscore"]
+            donor_evalue = float(best_hit_donor[gene]["evalue"])
+            donor_bitscore = float(best_hit_donor[gene]["bitscore"])
 
-        ai = calculate_ai(toi_evalue,ntoi_evalue)
-        hgt_score = ntoi_bitscore - toi_bitscore
-        if len(set_taxid_ntoi[gene]) == 0:
+        ai = calculate_ai(ingroup_evalue,donor_evalue)
+        hgt_score = donor_bitscore - ingroup_bitscore
+        if len(set_taxid_donor[gene]) == 0:
             outg_pct = 0 #GK_outg_pct
         else:
-            outg_pct = round(100 * len(set_taxid_ntoi[gene]) / (len(set_taxid_ntoi[gene]) + len(set_taxid_toi[gene]))) #GK_outg_pct
-        sum_toi_bitscore[gene].sort(reverse=True)
-        sum_ntoi_bitscore[gene].sort(reverse=True)
+            outg_pct = round(100 * len(set_taxid_donor[gene]) / (len(set_taxid_donor[gene]) + len(set_taxid_ingroup[gene]))) #GK_outg_pct
+        sum_ingroup_bitscore[gene].sort(reverse=True)
+        sum_donor_bitscore[gene].sort(reverse=True)
 
-        norm_bit_toi_gene = 0
-        norm_bit_ntoi_gene = 0
-        for bit in sum_toi_bitscore[gene]:
-            norm_bit = calculate_norm_bitscore(bit,sum_toi_bitscore[gene][0],a)
-            norm_bit_toi_gene += norm_bit
-        for bit in sum_ntoi_bitscore[gene]:
-            norm_bit = calculate_norm_bitscore(bit,sum_ntoi_bitscore[gene][0],a)
-            norm_bit_ntoi_gene += norm_bit
-        Dnorm = norm_bit_ntoi_gene - norm_bit_toi_gene
-        #Dchs = sum(sum_ntoi_bitscore[gene]) - sum(sum_toi_bitscore[gene])
-        outout_file.write(gene + "\t" + ntoi_str + "\t" + toi_str + "\t" + str(ai) + "\t" + str(hgt_score) + "\t" + str(num_hits[gene])+"\t")
+        norm_bit_ingroup_gene = 0
+        norm_bit_donor_gene = 0
+        for bit in sum_ingroup_bitscore[gene]:
+            norm_bit = calculate_norm_bitscore(bit,sum_ingroup_bitscore[gene][0],a)
+            norm_bit_ingroup_gene += norm_bit
+        for bit in sum_donor_bitscore[gene]:
+            norm_bit = calculate_norm_bitscore(bit,sum_donor_bitscore[gene][0],a)
+            norm_bit_donor_gene += norm_bit
+        Dnorm = norm_bit_donor_gene - norm_bit_ingroup_gene
+        #Dchs = sum(sum_donor_bitscore[gene]) - sum(sum_ingroup_bitscore[gene])
+        outout_file.write(gene + "\t" + donor_str + "\t" + ingroup_str + "\t" + str(ai) + "\t" + str(hgt_score) + "\t" + str(num_hits[gene])+"\t")
         outout_file.write(str(Dnorm) + "\t" + str(outg_pct) + "\n")
 
     outout_file.close()
 
-def calculate_ai(toi_evalue,ntoi_evalue):
+def calculate_ai(ingroup_evalue,donor_evalue):
     offset = 1e-200
-    ai = math.log(toi_evalue + offset) - math.log(ntoi_evalue + offset);
+    ai = math.log(ingroup_evalue + offset) - math.log(donor_evalue + offset);
     return ai
 
 def calculate_norm_bitscore(bitscore,hbitscore,a):
