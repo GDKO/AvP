@@ -10,15 +10,15 @@ mode: sp    # use nr for nr database, use sp for swissprot database, ur90 for un
 # prepare
 ai_cutoff: 0
 percent_identity: 100   # select hits equal or below this number
-cutoffextend: 20    # when toi hit is found, we take this hit + n hits
+cutoffextend: 20    # when ingroup hit is found, we take this hit + n hits
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
 percentage_similar_hits: 0.7  # group queries based on this
 # detect, clasify, evaluate
 fastml: true  # Use fasttree instead of IQTree
 node_support: 0  # nodes below that number will collapse
-complex_per_ingroup: 20   # if H/(H+T) smaller than this then node is considered T
-complex_per_hgt: 80   # if H/(H+T) greater than this then node is considered H
+complex_per_ingroup: 20   # if D/(D+I) smaller than this then node is considered Ingroup
+complex_per_donor: 80   # if D/(D+I) greater than this then node is considered Donor
 complex_per_node: 90  # if node contains percent number of this category, it is assigned
 
 # Program specific options

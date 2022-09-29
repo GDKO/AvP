@@ -61,7 +61,7 @@ def main():
     threads = config_opts["max_threads"]
     fastml = config_opts["fastml"]
     node_support = config_opts["node_support"]
-    complex_per = [config_opts["complex_per_ingroup"],config_opts["complex_per_hgt"]]
+    complex_per = [config_opts["complex_per_ingroup"],config_opts["complex_per_donor"]]
 
     #Check programs
     if fastml:
