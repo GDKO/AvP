@@ -10,7 +10,7 @@
         -a, --ai_file <FILE>        Alienness index full file
         -t, --tree_results <FILE>   Tree results file
         -k, --k_value <INT>         number of close genes to process [default: 5]
-        -m, --mode <INT>            mode gff, check documentation
+        -m, --mode <INT>            mode for annotation file, check documentation
 
 """
 
@@ -34,9 +34,14 @@ def main():
 
     # mode 0
     # [scaffold]  [source]  mRNA  [start]  [end]  [score]  [strand]  [frame]  ID=[transcript];Parent=[gene]
-    mode_gff = [["mRNA",";","="]]
+    
+    # mode 1
+    # [scaffold] [start] [end] [transcript]
 
-    scaf_location, gene_location = gff3_to_dict(genome_annotation_file,mode_gff[mode])
+
+    scaf_location, gene_location = ann_to_dict(genome_annotation_file,mode)
+
+
     ai_file_in = open(ai_file, 'r')
     gene_classification = {}
     for line in ai_file_in:
@@ -72,7 +77,7 @@ def main():
         else:
             gene_classification[gene] = "-"
 
-    t_prox_file_path = tree_results_file + ".prox.txt"
+    t_prox_file_path = tree_results_file + "_k" + str(k_value) +".prox.txt"
     t_prox_file = open(t_prox_file_path, "w")
 
     for gene in gene_to_test:
@@ -86,20 +91,29 @@ def main():
         score = contamination_score(close_string, k_value)
         t_prox_file.write(orig_tree_lines[gene] + "\t" + upstream_string + "|X|" +downstream_string + "\t" + str(score) + "\n")
 
-def gff3_to_dict(gff_file,mode_gff):
+def ann_to_dict(ann_file,mode):
+    if mode==0:
+        mode_gff = ["mRNA",";","="]
     scaf_location = {}
     sorted_scaf_location = {}
     gene_location = {}
-    with open_file(gff_file) as fhr_gff:
-        for line in fhr_gff:
+    with open_file(ann_file) as fhr_ann:
+        for line in fhr_ann:
             if not line.startswith("#"):
-                gff_column = line.rstrip('\n').split('\t')
-                scaf = gff_column[0]
-                feature = gff_column[2]
-                start = gff_column[3]
-                attr = gff_column[8]
-                transcript = attr.split(mode_gff[1])[0].split(mode_gff[2])[1]
-                if feature == mode_gff[0]:
+                ann_column = line.rstrip('\n').split()
+                if mode==0:
+                    scaf = ann_column[0]
+                    feature = ann_column[2]
+                    start = ann_column[3]
+                    attr = ann_column[8]
+                    transcript = attr.split(mode_gff[1])[0].split(mode_gff[2])[1]
+                elif mode==1:
+                    scaf = ann_column[0]
+                    start = ann_column[1]
+                    transcript = ann_column[3]
+                else:
+                    print("Throw error\n")
+                if (mode==0 and feature == mode_gff[0]) or mode==1:
                     if not scaf in scaf_location.keys():
                         scaf_location[scaf] = {}
                         scaf_location[scaf]["start"] = []
@@ -115,7 +129,6 @@ def gff3_to_dict(gff_file,mode_gff):
         L = [x for _,x in sorted(zip(X,Y))]
         sorted_scaf_location[scaf] = L
     return sorted_scaf_location, gene_location
-
 
 def get_classification_string(gene_classification,nearby_genes):
     result_string = ""
