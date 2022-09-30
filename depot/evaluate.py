@@ -39,12 +39,26 @@ def main():
     config_opts = yaml.safe_load(stream)
     stream.close()
 
+    data_type = config_opts["data_type"]
     threads = config_opts["max_threads"]
     fastml = config_opts["fastml"]
 
     iq_threads = config_opts["iq_threads"]
     iqmodel = config_opts["iqmodel"]
     ufbootstrap = config_opts["ufbootstrap"]
+
+    fasttree_model = ""
+    fastml_iqmodel = ""
+
+    if data_type == "AA":
+        fasttree_model = "-gamma -lg"
+        fastml_iqmodel = "-m LG+G"
+    elif data_type == "DNA":
+        fasttree_model = "-gamma -gtr"
+        iqmodel = "-m GTR+G"
+        fastml_iqmodel = iqmodel
+    else:
+        print("Throw error\n")
 
     jobs = get_num_jobs(fastml, threads, iq_threads)
 
@@ -127,13 +141,12 @@ def main():
                 con.close()
                 # FastTree params
                 tree_path = os.path.join(out_path,gene + ".fasttree")
-                fasttree_params = "-gamma -lg -constraints " + con_path + " " + alignment[gene] + " > " + tree_path
+                fasttree_params = fasttree_model + " -constraints " + con_path + " " + alignment[gene] + " > " + tree_path
                 t_list=[fasttree_params]
                 fasttree_job_list.append(t_list)
 
                 con_tree_list.append([tree_path,tree[gene],all_trees_path])
                 #IqTree Alt Params
-                fastml_iqmodel = "-m LG+G"
                 iqtree_alt_params = "-quiet -nt " + str(iq_threads) + " " + fastml_iqmodel + " -n 0 -zb 10000 -au -pre " + tree_path + " -s " + alignment[gene] + " -z " + all_trees_path
                 iqtree_alt_job_list.append(iqtree_alt_params)
 

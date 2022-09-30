@@ -76,7 +76,6 @@ def main():
     ufbootstrap = config_opts["ufbootstrap"]
 
     fasttree_model = ""
-    fasttree_model = "-gtr -gamma"
 
     if data_type == "AA":
         fasttree_model = "-gamma -lg"
