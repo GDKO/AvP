@@ -58,6 +58,7 @@ def main():
     config_opts = yaml.safe_load(stream)
     stream.close()
 
+    data_type = config_opts["data_type"]
     threads = config_opts["max_threads"]
     fastml = config_opts["fastml"]
     node_support = config_opts["node_support"]
@@ -73,6 +74,17 @@ def main():
     iq_threads = config_opts["iq_threads"]
     iqmodel = config_opts["iqmodel"]
     ufbootstrap = config_opts["ufbootstrap"]
+
+    fasttree_model = ""
+    fasttree_model = "-gtr -gamma"
+
+    if data_type == "AA":
+        fasttree_model = "-gamma -lg"
+    elif data_type == "DNA":
+        fasttree_model = "-gamma -gtr"
+        iqmodel = "-m GTR+G"
+    else:
+        print("Throw error\n")
 
     jobs = get_num_jobs(fastml, threads, iq_threads)
 
@@ -147,7 +159,7 @@ def main():
         for group_name, value in sorted(group_dict.items(), key = itemgetter(1), reverse = True):
             group_file = os.path.join(input_dir,group_name)
             if fastml:
-                fasttree_params = "-gamma -lg " + group_file + " > " + os.path.join(tree_path, group_name + ".fasttree")
+                fasttree_params = fasttree_model + " " + group_file + " > " + os.path.join(tree_path, group_name + ".fasttree")
                 t_list=[fasttree_params]
                 job_list.append(t_list)
             else:
