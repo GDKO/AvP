@@ -119,7 +119,7 @@ def main():
     elif data_type == "DNA":
         dbtype = "nucl"
     else:
-        print("Throw error\n")
+        sys.exit("data_type should be either AA or DNA")
 
     #Setting up NCBI Taxonomy
     ncbi = NCBITaxa()

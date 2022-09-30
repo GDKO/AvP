@@ -34,7 +34,7 @@ def main():
 
     # mode 0
     # [scaffold]  [source]  mRNA  [start]  [end]  [score]  [strand]  [frame]  ID=[transcript];Parent=[gene]
-    
+
     # mode 1
     # [scaffold] [start] [end] [transcript]
 
@@ -112,7 +112,7 @@ def ann_to_dict(ann_file,mode):
                     start = ann_column[1]
                     transcript = ann_column[3]
                 else:
-                    print("Throw error\n")
+                    sys.exit("Mode should be either 0 or 1")
                 if (mode==0 and feature == mode_gff[0]) or mode==1:
                     if not scaf in scaf_location.keys():
                         scaf_location[scaf] = {}
