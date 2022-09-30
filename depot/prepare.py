@@ -93,6 +93,7 @@ def main():
     config_opts = yaml.safe_load(stream)
     stream.close()
 
+    data_type = config_opts["data_type"]
     threads = config_opts["max_threads"]
     trim = config_opts["trimal"]
     ai_cutoff = config_opts["ai_cutoff"]
@@ -110,6 +111,15 @@ def main():
         get_outdir(trim_folder)
     else:
         trim_folder = ""
+
+    dbtype = ""
+
+    if data_type == "AA":
+        dbtype = "prot"
+    elif data_type == "DNA":
+        dbtype = "nucl"
+    else:
+        print("Throw error\n")
 
     #Setting up NCBI Taxonomy
     ncbi = NCBITaxa()
@@ -216,7 +226,7 @@ def main():
     setblastlog_path = os.path.join(tmp_folder,"setblast.log")
 
     if mode == "blast":
-        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["blast_db_path"] + ' -dbtype prot -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setblastlog_path + ' -out ' + setblastfa_path
+        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["blast_db_path"] + ' -dbtype ' + dbtype + ' -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setblastlog_path + ' -out ' + setblastfa_path
         subprocess.call(blastdbcmd_command, shell= True)
     else: # GK This is specific to SwissProt for now, have to test for UniProt in the future
         if mode == "sp":
