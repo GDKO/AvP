@@ -49,7 +49,9 @@ def main():
             line_columns = line.split('\t')
             gene = line_columns[0]
             ai = line_columns[3]
-            if float(ai) <= 0:
+            if line_columns[1] == "::::" and line_columns[2] == "::::":
+                classification = "-"
+            elif float(ai) <= 0:
                 classification = "N"
             elif float(ai) < 30:
                 classification = "L"
