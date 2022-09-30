@@ -2,9 +2,9 @@
 max_threads: 4
 
 # DB path
-nr_db_path: nr    # change to the local nr path
+blast_db_path: nr    # change to the local blast_db path
 fasta_path: uniprot_sprot.fasta  # change to the local fasta path for sp, ur90, or custom database
-mode: sp    # use nr for nr database, use sp for swissprot database, ur90 for uniref90 or custom database
+mode: sp    # use blast for blast database, use sp for swissprot database, ur90 for uniref90 or custom database
 
 ## Algorithm options
 # prepare

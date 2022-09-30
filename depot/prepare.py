@@ -9,7 +9,7 @@
     -a, --aifeatures <FILE>     alienness features file
     -o, --output <DIR>          creates a directory for all output files
     -f, --fastafile <FILE>      fasta file of proteome
-    -b, --blastfile <FILE>      output blastp against nr -outfmt 7
+    -b, --hitsfile <FILE>      hits file in -outfmt 6
     -x, --tax_groups <FILE>     file specifying taxonomic groups (ingroup, exclude)
     -c, --config_file <FILE>    config file
     -y, --ortho_groups <FILE>   Group genes based on an orthology groups file
@@ -44,7 +44,7 @@ def main():
     ai_features = args['--aifeatures']
     output_dir = get_outdir(args['--output'])
     fasta_inputfile = args['--fastafile']
-    blast_inputfile = args['--blastfile']
+    hits_inputfile = args['--hitsfile']
     groups_yaml = args['--tax_groups']
     config_yaml = args['--config_file']
     ortho_groups = args['--ortho_groups']
@@ -152,14 +152,14 @@ def main():
     print ("[!] Selected " + str(len(query_dict_set)) + " HGT candidates")
 
     """
-    2. Parse Blast
+    2. Parse hits file
     """
 
-    print ("[+] Parsing Blast file and grouping similar queries")
+    print ("[+] Parsing hits file and grouping similar queries")
 
     extract_hit_id_set = set()
 
-    with open_file(blast_inputfile) as fhr_bl:
+    with open_file(hits_inputfile) as fhr_bl:
         for line in fhr_bl:
             if('#' not in line):
                 L_hitqline = line.rstrip('\n').split('\t')
@@ -211,12 +211,12 @@ def main():
     fhw_extract_id.write('\n'.join(extract_hit_id_set)+'\n')
     fhw_extract_id.close()
 
-    setnrfa_path = os.path.join(tmp_folder,"setnr.fa")
-    fhw_setnrfa = open(setnrfa_path, 'w')
-    setnrlog_path = os.path.join(tmp_folder,"setnr.log")
+    setblastfa_path = os.path.join(tmp_folder,"setblast.fa")
+    fhw_setblastfa = open(setblastfa_path, 'w')
+    setblastlog_path = os.path.join(tmp_folder,"setblast.log")
 
-    if mode == "nr":
-        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["nr_db_path"] + ' -dbtype prot -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setnrlog_path + ' -out ' + setnrfa_path
+    if mode == "blast":
+        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["blast_db_path"] + ' -dbtype prot -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setblastlog_path + ' -out ' + setblastfa_path
         subprocess.call(blastdbcmd_command, shell= True)
     else: # GK This is specific to SwissProt for now, have to test for UniProt in the future
         if mode == "sp":
@@ -229,17 +229,17 @@ def main():
             for record in SeqIO.parse(handle,"fasta"):
                 if record.id in extract_hit_id_set:
                     ox, taxid = db_re.search(record.description).group().split("=")
-                    fhw_setnrfa.write(">" + record.id + "@" + taxid + "\n")
+                    fhw_setblastfa.write(">" + record.id + "@" + taxid + "\n")
                     seq = str(record.seq)
-                    fhw_setnrfa.write(seq + "\n")
+                    fhw_setblastfa.write(seq + "\n")
 
-    fhw_setnrfa.close()
+    fhw_setblastfa.close()
 
     # Load hits to memory
     hits_dict = {}
     record_to_taxid = {}
 
-    with open_file(setnrfa_path) as handle:
+    with open_file(setblastfa_path) as handle:
         for record in SeqIO.parse(handle, "fasta"):
             id,taxid = record.id.rstrip('\n').split('@')
             record_to_taxid[id] = taxid
