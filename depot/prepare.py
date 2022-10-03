@@ -146,7 +146,7 @@ def main():
             # Get index col
             i_query = row.index('query name')
             i_donor = row.index('donor')
-            i_ingroup = row.index('recipient')
+            i_ingroup = row.index('ingroup')
             i_ai = row.index('AI')
             i_hgt = row.index('HGTindex')
             i_nbhits = row.index('query hits number')

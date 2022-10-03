@@ -54,7 +54,7 @@ def main():
     set_taxid_donor = {} #GK_outg_pct
 
 
-    outout_file.write("query name\tdonor\trecipient\tAI\tHGTindex\tquery hits number\tAHS\toutg_pct\n")
+    outout_file.write("query name\tdonor\tingroup\tAI\tHGTindex\tquery hits number\tAHS\toutg_pct\n")
 
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
