@@ -158,7 +158,7 @@ def main():
             L_donor = row[i_donor].rstrip('\n').rsplit(':',4)
             L_ingroup = row[i_ingroup].rstrip('\n').rsplit(':',4)
             if (row[i_donor] != '::::'): #Skipping hits with only Ingroup
-                if (float(row[i_nbhits])>= min_num_hits and float(L_donor[2]) <= percent_identity:
+                if (float(row[i_nbhits])>= min_num_hits and float(L_donor[2]) <= percent_identity):
                     if eval(selection):
                         donor_pos = int(L_donor[1])
                         if(row[i_ingroup] == '::::'):
