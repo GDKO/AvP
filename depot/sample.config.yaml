@@ -10,6 +10,9 @@ data_type: AA    # data type DNA, AA
 ## Algorithm options
 # prepare
 ai_cutoff: 0
+ahs_cutoff: 0
+outg_pct_cutoff: 80
+selection: "ai or ahs" # select sequences based on which metrics, another example "(ai or ahs) and outg_pct"
 percent_identity: 100   # select hits equal or below this number
 cutoffextend: 20    # when ingroup hit is found, we take this hit + n hits
 trimal: false

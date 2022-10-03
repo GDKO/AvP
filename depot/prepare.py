@@ -97,6 +97,9 @@ def main():
     threads = config_opts["max_threads"]
     trim = config_opts["trimal"]
     ai_cutoff = config_opts["ai_cutoff"]
+    ahs_cutoff = config_opts["ahs_cutoff"]
+    pct_cutoff = config_opts["outg_pct_cutoff"]
+    selection = config_opts["selection"]
     percent_identity = config_opts["percent_identity"]
     cutoffextend = config_opts["cutoffextend"]
     min_num_hits = config_opts["min_num_hits"]
@@ -104,6 +107,11 @@ def main():
     mode = config_opts["mode"]
     mafft_options = config_opts["mafft_options"]
     trimal_options = config_opts["trimal_options"]
+
+    # turn selection into condition
+    selection = selection.replace("ai","int(row[i_ai])>"+str(ai_cutoff))
+    selection = selection.replace("ahs","int(row[i_ahs])>"+str(ahs_cutoff))
+    selection = selection.replace("outg_pct","int(row[i_pct])>"+str(outg_pct_cutoff))
 
     if trim:
         check_programs("trimal")
@@ -142,22 +150,25 @@ def main():
             i_ai = row.index('AI')
             i_hgt = row.index('HGTindex')
             i_nbhits = row.index('query hits number')
+            i_ahs = row.index('AHS')
+            i_pct = row.index('outg_pct')
             break
 
         for row in reader:
             L_donor = row[i_donor].rstrip('\n').rsplit(':',4)
             L_ingroup = row[i_ingroup].rstrip('\n').rsplit(':',4)
             if (row[i_donor] != '::::'): #Skipping hits with only Ingroup
-                if (float(row[i_nbhits])>= min_num_hits and float(L_donor[2]) <= percent_identity and float(row[i_ai])>=ai_cutoff):
-                    donor_pos = int(L_donor[1])
-                    if(row[i_ingroup] == '::::'):
-                        ingroup_pos = 0
-                    else:
-                        ingroup_pos = int(L_ingroup[1])
-                    #Select at least 50 hits
-                    last_pos = min(max(max(ingroup_pos,donor_pos) + cutoffextend, 50), int(row[i_nbhits]))
-                    queries_info[row[i_query]] = {'pos':last_pos}
-                    query_dict_set[row[i_query]] = set()
+                if (float(row[i_nbhits])>= min_num_hits and float(L_donor[2]) <= percent_identity:
+                    if eval(selection):
+                        donor_pos = int(L_donor[1])
+                        if(row[i_ingroup] == '::::'):
+                            ingroup_pos = 0
+                        else:
+                            ingroup_pos = int(L_ingroup[1])
+                        #Select at least 50 hits
+                        last_pos = min(max(max(ingroup_pos,donor_pos) + cutoffextend, 50), int(row[i_nbhits]))
+                        queries_info[row[i_query]] = {'pos':last_pos}
+                        query_dict_set[row[i_query]] = set()
 
     print ("[!] Selected " + str(len(query_dict_set)) + " HGT candidates")
 
