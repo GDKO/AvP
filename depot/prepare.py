@@ -111,7 +111,7 @@ def main():
     # turn selection into condition
     selection = selection.replace("ai","int(row[i_ai])>"+str(ai_cutoff))
     selection = selection.replace("ahs","int(row[i_ahs])>"+str(ahs_cutoff))
-    selection = selection.replace("outg_pct","int(row[i_pct])>"+str(outg_pct_cutoff))
+    selection = selection.replace("outg_pct","int(row[i_pct])>"+str(pct_cutoff))
 
     if trim:
         check_programs("trimal")
