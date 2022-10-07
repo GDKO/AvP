@@ -23,7 +23,7 @@ import sys
 from docopt import docopt
 
 def main():
-    args = docopt(__doc__,version='0.9.1', options_first=True)
+    args = docopt(__doc__,version='1.0.0', options_first=True)
     if args['<module>'] == 'prepare':
         import depot.prepare as prepare
         prepare.main()
