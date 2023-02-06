@@ -56,55 +56,59 @@ def main():
 
     outout_file.write("query name\tdonor\tingroup\tAI\tHGTindex\tquery hits number\tAHS\toutg_pct\n")
 
+    skip = 0
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
             elements = line.split()
-            gene = elements[0]
-            list_genes.append(gene)
-            hit = elements[1]
-            iden = elements[2]
-            evalue = elements[10]
-            bitscore = elements[11]
-            taxid = elements[-1]
-            if ";" in taxid:
-                first_id = taxid.split(";")[0] #get the first id from taxid if multiple
-                taxid = first_id
-            if gene not in num_hits.keys():
-                num_hits[gene] = 0
-                sum_ingroup_bitscore[gene] = [] #GK_ahs
-                sum_donor_bitscore[gene] = [] #GK_ahs
-                set_taxid_ingroup[gene] = set() #GK_outg_pct
-                set_taxid_donor[gene] = set() #GK_outg_pct
-            num_hits[gene] += 1
-            try:
-                ncbi.get_lineage(taxid)
-            except:
-                # actually print a file containing lost taxids
-                number_of_lost_taxids += 1
+            if len(elements)<13:
+                skip += 1
             else:
-                lnode = set(ncbi.get_lineage(taxid))
-                if lnode.intersection(egp_taxid):
-                    egp = 1
-                elif lnode.intersection(ingroup_taxid):
-                    sum_ingroup_bitscore[gene].append(float(bitscore)) #GK_ahs
-                    set_taxid_ingroup[gene].add(taxid) #GK_outg_pct
-                    if gene not in best_hit_ingroup.keys():
-                        best_hit_ingroup[gene] = {}
-                        best_hit_ingroup[gene]["hit"] = hit
-                        best_hit_ingroup[gene]["pos"] = str(num_hits[gene])
-                        best_hit_ingroup[gene]["iden"] = iden
-                        best_hit_ingroup[gene]["evalue"] = str(evalue)
-                        best_hit_ingroup[gene]["bitscore"] = bitscore
+                gene = elements[0]
+                list_genes.append(gene)
+                hit = elements[1]
+                iden = elements[2]
+                evalue = elements[10]
+                bitscore = elements[11]
+                taxid = elements[-1]
+                if ";" in taxid:
+                    first_id = taxid.split(";")[0] #get the first id from taxid if multiple
+                    taxid = first_id
+                if gene not in num_hits.keys():
+                    num_hits[gene] = 0
+                    sum_ingroup_bitscore[gene] = [] #GK_ahs
+                    sum_donor_bitscore[gene] = [] #GK_ahs
+                    set_taxid_ingroup[gene] = set() #GK_outg_pct
+                    set_taxid_donor[gene] = set() #GK_outg_pct
+                num_hits[gene] += 1
+                try:
+                    ncbi.get_lineage(taxid)
+                except:
+                    # actually print a file containing lost taxids
+                    number_of_lost_taxids += 1
                 else:
-                    sum_donor_bitscore[gene].append(float(bitscore)) #GK_ahs
-                    set_taxid_donor[gene].add(taxid) #GK_outg_pct
-                    if gene not in best_hit_donor.keys():
-                        best_hit_donor[gene] = {}
-                        best_hit_donor[gene]["hit"] = hit
-                        best_hit_donor[gene]["pos"] = str(num_hits[gene])
-                        best_hit_donor[gene]["iden"] = iden
-                        best_hit_donor[gene]["evalue"] = str(evalue)
-                        best_hit_donor[gene]["bitscore"] = bitscore
+                    lnode = set(ncbi.get_lineage(taxid))
+                    if lnode.intersection(egp_taxid):
+                        egp = 1
+                    elif lnode.intersection(ingroup_taxid):
+                        sum_ingroup_bitscore[gene].append(float(bitscore)) #GK_ahs
+                        set_taxid_ingroup[gene].add(taxid) #GK_outg_pct
+                        if gene not in best_hit_ingroup.keys():
+                            best_hit_ingroup[gene] = {}
+                            best_hit_ingroup[gene]["hit"] = hit
+                            best_hit_ingroup[gene]["pos"] = str(num_hits[gene])
+                            best_hit_ingroup[gene]["iden"] = iden
+                            best_hit_ingroup[gene]["evalue"] = str(evalue)
+                            best_hit_ingroup[gene]["bitscore"] = bitscore
+                    else:
+                        sum_donor_bitscore[gene].append(float(bitscore)) #GK_ahs
+                        set_taxid_donor[gene].add(taxid) #GK_outg_pct
+                        if gene not in best_hit_donor.keys():
+                            best_hit_donor[gene] = {}
+                            best_hit_donor[gene]["hit"] = hit
+                            best_hit_donor[gene]["pos"] = str(num_hits[gene])
+                            best_hit_donor[gene]["iden"] = iden
+                            best_hit_donor[gene]["evalue"] = str(evalue)
+                            best_hit_donor[gene]["bitscore"] = bitscore
 
     for gene in set(list_genes):
 
@@ -149,6 +153,8 @@ def main():
         outout_file.write(str(Dnorm) + "\t" + str(outg_pct) + "\n")
 
     outout_file.close()
+
+    print("[!] Skipped " + str(skip) + " hits") 
 
 def calculate_ai(ingroup_evalue,donor_evalue):
     offset = 1e-200
