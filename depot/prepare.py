@@ -237,7 +237,7 @@ def main():
     setblastlog_path = os.path.join(tmp_folder,"setblast.log")
 
     if mode == "blast":
-        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["blast_db_path"] + ' -dbtype ' + dbtype + ' -entry_batch ' +  extract_id_path + ' -target_only -outfmt ">%a@%T\n%s" -logfile ' + setblastlog_path + ' -out ' + setblastfa_path
+        blastdbcmd_command = 'blastdbcmd -db '+ config_opts["blast_db_path"] + ' -dbtype ' + dbtype + ' -entry_batch ' +  extract_id_path + ' -outfmt ">%a@%T\n%s" -logfile ' + setblastlog_path + ' -out ' + setblastfa_path
         subprocess.call(blastdbcmd_command, shell= True)
     else: # GK This is specific to SwissProt for now, have to test for UniProt in the future
         if mode == "sp":
