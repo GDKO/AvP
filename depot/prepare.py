@@ -241,9 +241,9 @@ def main():
         subprocess.call(blastdbcmd_command, shell= True)
     else: # GK This is specific to SwissProt for now, have to test for UniProt in the future
         if mode == "sp":
-            db_re = re.compile("OX=\d*")
+            db_re = re.compile("OX=[0-9]*")
         elif mode == "ur90":
-            db_re = re.compile("TaxID=\d*")
+            db_re = re.compile("TaxID=[0-9]*")
         else:
             sys.exit(mode + " is not a valid mode")
         with open_file(config_opts["fasta_path"]) as handle:

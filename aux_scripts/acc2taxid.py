@@ -27,9 +27,9 @@ def main():
 
 
     if mode == "swissprot":
-        db_re = re.compile("OX=\d*")
+        db_re = re.compile("OX=[0-9]*")
     elif mode == "uniref":
-        db_re = re.compile("TaxID=\d*")
+        db_re = re.compile("TaxID=[0-9]*")
     else:
         sys.exit(mode + " is not a valid mode")
 
