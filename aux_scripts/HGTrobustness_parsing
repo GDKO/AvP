@@ -1,0 +1,450 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import os.path
+import numpy as np
+import pandas as pd
+from collections import Counter
+import argparse
+import os
+from ete3 import Tree
+
+##-- Node tags
+flags = {  
+    "studied": "S",
+    "exclude": "E",
+    "Donors": "H",
+    "Ingroup": "T",
+    "unclass": "U",
+}
+
+##-- Functions
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Facilitate a phylogenetic validation of putative Horizontal Gene Transfer (HGT) events based on a comprehensive analysis involving protein counts and taxonomic ratios within sister branches.')
+    parser.add_argument('--fasttree_tree_results','-a', type=str, help='output file from fasttree_tree_results', required=True)
+    parser.add_argument('--fasttree','-t', type=str, help='directory path containing trees in newick format', required=True)
+    parser.add_argument('--nb_prot', '-n', type=int, help='Total number of proteins in sister branch and ancestral sister branch', required=False, default=3)
+    parser.add_argument('--clade_ratio', '-r', type=float, help='Total number of proteins in sister branch and ancestral sister branch', required=False, default=0.8)
+    parser.add_argument('--output_names', '-o', type=str, help='Names of output files', required=True)
+    args = parser.parse_args()
+
+    args = parser.parse_args()
+
+    # Check if paths exist
+    if not os.path.exists(args.fasttree_tree_results):
+        parser.error(f"The file {args.fasttree_tree_results} does not exist.")
+    if not os.path.isdir(args.fasttree):
+        parser.error(f"The directory {args.fasttree} does not exist.")
+
+    # Check if numbers are in valid range
+    if args.nb_prot <= 0:
+        parser.error("The number of proteins should be a positive integer.")
+    if not 0 <= args.clade_ratio <= 1:
+        parser.error("The clade ratio should be a float between 0 and 1.")
+
+    return args
+
+
+def import_tree(tree_filename):
+    """
+    Import a tree structure from a newick file and root the tree at the midpoint.
+
+    Args:
+        tree_filename (str): The name of the file containing the tree structure in newick format.
+
+    Returns:
+        gene_tree (Tree): The imported tree with the root ancestor set at the midpoint.
+    """
+    gene_tree = Tree(tree_filename, format=0)
+
+    R = gene_tree.get_midpoint_outgroup()
+
+    if R != None:
+        gene_tree.set_outgroup(R)
+    return gene_tree
+
+
+def classify_nodes(tree):
+	"""
+	Add tag to nodes of a tree based on their names.
+
+	Parameters:
+	tree (Tree): The tree to classify.
+
+	Returns:
+	Tree: The classified tree.
+	"""
+	# Label leaves
+	for node in tree.traverse("preorder"):
+		if "@" in node.name:
+			if "@Ingroup" in node.name:
+				node.name = node.name + "@T"
+				node.add_feature("classif", "T")
+			elif "@EGP" in node.name:
+				node.name = node.name + "@E"
+				node.add_feature("classif", "E")
+			elif (
+				"Unknown" in node.name
+				or "Other" in node.name
+				or "Unclassified" in node.name
+			):
+				node.name = node.name + "@U"
+				node.add_feature("classif", "U")
+			elif "@StudiedOrganism" in node.name:
+				node.name = node.name + "@S"
+				node.add_feature("classif", "S")
+			else:
+				node.name = node.name + "@H"
+				node.add_feature("classif", "H")
+
+	# Label internal nodes
+	for node in tree.traverse("preorder"):
+		if "@" not in node.name:
+			taxon = {
+				s.split("@")[1]
+				for s in node.get_leaf_names()
+				# if ("@" in s) & ("Unknown" not in s) & ("Other" not in s)
+			}
+		
+			node.add_feature("name", ";".join(set(taxon)))
+			
+	U = tree.search_nodes(classif="U")
+	for n in U : 
+		n.delete()
+			
+	return tree
+
+
+def compoNode(ancestral_nodef, parsed_childs):
+    """
+    This function returns the names of the leaves of the ancestor.
+
+    Args:
+        ancestral_nodef (object): The ancestor whose leaves we want to obtain.
+        parsed_childs (list): The already analyzed leaves.
+
+    Returns:
+        tuple: A pair of lists containing the names of the ancestor's leaves and the corresponding branches.
+    """
+    children_ancestral_node = ancestral_nodef.get_leaf_names()
+    children_ancestral_node = [item for item in children_ancestral_node if item not in parsed_childs] # remove known branches
+    compoBranche = [child.split("@")[-1] for child in children_ancestral_node]
+    compoBranche = [value for value in compoBranche if value != "U"]
+
+    return children_ancestral_node, compoBranche
+
+
+def getsister(subtree):
+	"""
+	Returns the sister leaves and the aunt leaves of a given subtree in a tree.
+
+	Parameters:
+	subtree (Subtree): The subtree object.
+
+	Returns:
+	tuple: A tuple containing two lists. The first list contains the sister leaves of the subtree,
+	and the second list contains the aunt leaves of the subtree.
+	"""
+	leaves_ppn = subtree.get_leaf_names()
+	subtree_ancestors = subtree.get_ancestors()
+
+	if len(subtree_ancestors) > 0:
+		leaves_sb_ppn = subtree_ancestors.pop(0).get_leaf_names()
+		leaves_sb = [item for item in leaves_sb_ppn if item not in leaves_ppn]
+	else:
+		leaves_sb = []
+
+	if len(subtree_ancestors) > 0:
+		
+		leaves_asb_sb_ppn = subtree.get_ancestors().pop(1).get_leaf_names()
+		leaves_asb = [item for item in leaves_asb_sb_ppn if item not in leaves_ppn + leaves_sb_ppn]
+	else:
+		leaves_asb = []
+
+	return leaves_sb, leaves_asb
+
+
+def extrac_info(tree, subtree, group, sevent):
+	"""
+	Extracts information from a parse tree.
+
+	Parameters:
+	- tree: The parse tree.
+	- subtree: The subtree to extract information from.
+	- group: The group number.
+	- sevent: The event number.
+
+	Returns:
+	- dico_group: A dictionary containing the extracted information.
+	"""
+	SB, ASB = getsister(subtree)
+	dico_group = {'groupNB': group, 'eventNB': sevent, 'ppn' :subtree.get_leaf_names(),'SB' : SB, 'ASB' : ASB }
+
+	return dico_group
+
+
+def cleanLCA(tree, group):
+	"""
+	Cleans the Lowest Common Ancestor (LCA) nodes in a tree based on a given group.
+
+	Parameters:
+	tree (Tree): The input tree.
+	group (str): The group to consider for cleaning.
+
+	Returns:
+	Tree: The cleaned tree.
+	"""
+	parsed_leaves = set()
+	subtrees = tree.search_nodes(classif="lca")
+	for subtree in subtrees:
+		subtree_leaves = set(subtree.get_leaf_names())
+		if subtree_leaves.intersection(parsed_leaves):
+			subtree.classif = 'notlca'
+		parsed_leaves = parsed_leaves.union(subtree_leaves)
+	return tree
+
+
+def browsingSubtree(tree, group, outtree) :
+    """
+    Browse the subtree of a given tree and extract information for each event.
+
+    Parameters:
+    - tree: The input tree.
+    - group: The group identifier.
+    - outtree: The output tree path.
+
+    Returns:
+    - dico_groups: A dictionary containing the extracted information for each event.
+    - sevent: The total number of events.
+
+    """
+    sevent = 0
+    
+    tree = cleanLCA(tree, group)
+    
+    outTreePath = outtree+ '' + group + ".fa.nw"
+    
+    subtrees = tree.search_nodes(classif="lca")
+    dico_groups= {}
+    
+    for subtreeNB in range(len(subtrees)) :
+        sevent += 1
+        subtree = subtrees[subtreeNB]
+        
+        eventNb = subtreeNB + 1
+        dico_groups[sevent] = extrac_info(tree, subtree, group, sevent)
+        
+    return dico_groups, sevent
+
+
+def check_occurence_string(lst):
+    """
+    Check the occurrence of strings in a list and return the string that occurs more than 80% of the time.
+
+    Parameters:
+    lst (list): A list of strings.
+
+    Returns:
+    str: The string that occurs more than 80% of the time. If no such string is found, returns 'complexe'.
+    """
+    count = Counter(lst)
+    total = len(lst)
+    for string, occurrence in count.items():
+        if occurrence / total >= 0.8:
+            return string
+    return 'complexe'
+
+
+def found_ppnLCA(group,tree, genes_set) : 
+    """ Find the lowest common ancestor (LCA) for a set of genes in a given tree.
+        Parameters:
+    group (str): The group identifier.
+    tree (Tree): The tree to search for the LCA.
+    genes_set (list): The set of genes to find the LCA for.
+
+    Returns:
+    Tree: The modified tree with the LCA nodes labeled.
+    """
+
+    while len(genes_set) > 0 :
+        # variables initialization
+        parsed_childs = [] 
+        LCA_found = False
+        
+        gene = genes_set.pop()
+        parsed_childs.append(gene)
+
+        current_node = tree.get_leaves_by_name(gene)[0]
+        ancestral_nodes = current_node.get_ancestors()
+        
+        # skip already assigned hgt
+        known_genes =[]
+        for t in tree.search_nodes(classif="lca") : ## if lca hgt already known; skip
+            known_genes = known_genes + t.get_leaf_names()
+        
+        if gene in known_genes :
+            LCA_found == True
+            continue
+        
+        # looking for event acquisition ancestors
+        while (ancestral_nodes) and (LCA_found == False):
+            ancestral_node = ancestral_nodes.pop(0)
+            children_ancestral_node_BS, compoSB = compoNode(ancestral_node, parsed_childs)            
+            parsed_childs = parsed_childs + children_ancestral_node_BS
+            
+            lenSB = len([i for i in compoSB if i in ['S', 'E', 'H', 'T'] ])
+            lenSB_SE = len([i for i in compoSB if i  in ['S', 'E'] ])
+            lenSB_HT = len([i for i in compoSB if i  in ['H', 'T'] ])
+            
+            if lenSB == 0 : 
+                current_node = ancestral_node
+                continue 
+
+            
+            # SB = Tylenchida and Unclassified; but not only U
+            if  ( lenSB_SE / lenSB ) == 1   :  
+                current_node = ancestral_node ## node == only Tylenchida : current node
+                continue
+            
+            # SB = HT >= 0.7 total compoSB & + de 3HT  -> SB ok
+            elif  (lenSB_HT >= 3) : # (lenSB_HT >= (0.7*lenSB)) &
+                LCA_found = True
+                
+            # NM ou TOI ds SB but less than 3 or 0.7
+            else : 
+                ## --
+                # ASB exist
+                if len(ancestral_nodes) > 0 :
+                    ancestral_node_asb = ancestral_nodes[0]
+                    
+                    children_ancestral_node_ABS, compoASB = compoNode(ancestral_node_asb, parsed_childs)
+
+                    lenASB = len([i for i in compoASB if i  in ['S', 'E', 'H', 'T'] ])
+                    lenASB_HT = len([i for i in compoASB if i  in ['H', 'T'] ])
+
+                    if (lenASB > 0) and (( lenASB_HT / lenASB ) == 1) : 
+                    # SB = HT >= 0.7 total compoSB & + de 3HT  -> SB ok 
+                        LCA_found = True
+                # no ASB 
+                
+                else : 
+                    LCA_found = True
+                    
+        if LCA_found == True:
+            current_node.classif = 'lca'            
+        else :
+            with open ('log2_noLCA.txt' , 'a') as log2 :
+                log2.write(f'no LCA    :::    {gene=}   :::    {group=}\n')
+    
+    return tree
+
+
+def convert_to_csv(data_dico, output):
+    """
+    Convert a dictionary into a readable dataframe and print into CSV file.
+
+    Parameters:
+    - data_dico (dict): The input dictionary to be converted.
+    - output (str): The name of the output file.
+
+    """
+    tmp = pd.DataFrame.from_dict(data_dico, orient="index").reset_index().rename({'index' : 'group'}, axis = 1).melt(
+        id_vars=["group"],
+        var_name="event",
+        value_name="subdico",
+    ).dropna()
+
+    tmp = tmp['subdico'].apply(pd.Series).melt(
+        id_vars=["groupNB", 'eventNB'],
+        value_vars=["ppn","SB","ASB"],
+        var_name="type",
+        value_name="protid",
+    ).explode("protid")
+
+    tmp[['protid','taxonType', 'tag']] = tmp.protid.str.rsplit("@", expand=True)
+    tmp.rename({'groupNB' : 'group'}, axis = 1, inplace =True ) 
+    tmp['groupNB'] = tmp['group'].astype(str) +"_"+ tmp["eventNB"].astype(str)
+
+    tmp.to_csv(output+'__compoBranches.txt',index = False, sep ='\t')
+    
+    return tmp
+
+
+def classify_genes(tmp):
+    """
+    Classify genes based on sister branch composition.
+
+    Parameters:
+    compoBranch (str): The composition branches trees.
+
+    Returns:
+    df_output (DataFrame): A DataFrame containing the classified genes.
+        Columns: ['group', 'groupNB', 'protid', 'classification']
+    """
+    
+    data = tmp.loc[tmp.tag != 'E']
+    df_output = pd.DataFrame(columns=['group','groupNB', 'protid', 'classification'])
+
+    for group in data.groupNB.unique(): 
+        tag= 'na'
+        genes = data.loc[(data.groupNB == group) & (data.tag == 'S'),['group','groupNB', 'protid']].drop_duplicates()
+
+        sb = data.loc[(data.groupNB == group) & (data.type == 'SB'), 'taxonType']
+        asb = data.loc[(data.groupNB == group) & (data.type == 'ASB'), 'taxonType' ]
+
+        if (len(sb)+len(asb)) >= 3 :
+            tag = check_occurence_string(sb.tolist() + asb.tolist())
+        else :
+            tag = 'no HGT'
+
+        genes['classification'] = tag    
+        df_output = pd.concat([df_output, genes])
+    
+    return df_output
+
+
+
+## -- Main --------
+args = parse_arguments()
+indexes = args.fasttree_tree_results
+tree_path = args.fasttree
+nb_prot = args.nb_prot
+clade_ratio = args.clade_ratio
+output = args.output_names
+
+
+df = pd.read_table(indexes, sep="\t", names=['classif', 'path1', 'path2', 'gene'] )
+df['group'] = df.path1.str.split('/').str[-1].str.rstrip('.fa')
+
+with open ('log.txt' , 'w') as log :
+    data_dico = {}
+    total_events = 0
+    group_parsed = 0
+    
+    for group in df.group.unique(): 
+        group_parsed+=1
+        log.write (f'----- start :{group=}\n')
+        genes_set =   [ gene+ "@StudiedOrganism@S" for gene in df.loc[df.group == group, "gene"].unique()]
+
+        treePath = tree_path + '/' + group + ".fa.fasttree"
+        if os.path.isfile(treePath) :
+            tree = import_tree(treePath)
+            if (tree) and tree != None : log.write(f'  - import {treePath=} ok\n')
+
+            tree = classify_nodes(tree)  
+            log.write('  - classify_nodes ok\n')
+            tree = found_ppnLCA(group, tree, genes_set)
+            log.write(f'  - found_ppnLCA ok \n')
+
+            dico,s_event  = browsingSubtree(tree, group, output) 
+            data_dico[group+'_'+str(s_event)] = dico
+            log.write(f'  - browsingSubtree ok, event founds : {s_event=}\n')
+        else : 
+            log.write(f'- {treePath=} ERROR : no file\n')
+
+        total_events = total_events + s_event
+
+
+compoBranch = convert_to_csv(data_dico, output)
+result = classify_genes(compoBranch)
+result.to_csv(output+'__classification_genes.txt', index = False, sep = '\t')
