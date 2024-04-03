@@ -126,7 +126,6 @@ def main():
             con = open(con_path,'w')
 
             FNULL = open(os.devnull, 'w')
-            all_trees_path =  os.path.join(out_path,gene + ".trees")
 
             if fastml:
                 # Constaint file for FastTree

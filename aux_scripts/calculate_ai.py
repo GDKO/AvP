@@ -40,6 +40,8 @@ def main():
     egp_taxid.add(2787823)
     egp_taxid.add(2787854)
 
+    forbidden_chars = ["|", "@"]
+
     #Setting up NCBI Taxonomy
     ncbi = NCBITaxa()
     number_of_lost_taxids = 0
@@ -64,6 +66,8 @@ def main():
                 skip += 1
             else:
                 gene = elements[0]
+                if any(char in gene for char in forbidden_chars):
+                    sys.exit("[x] Query Ids should not contain | or @ characters")
                 list_genes.append(gene)
                 hit = elements[1]
                 iden = elements[2]
