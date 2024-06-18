@@ -113,7 +113,7 @@ def main():
     selection = selection.replace("ahs","float(row[i_ahs])>"+str(ahs_cutoff))
     selection = selection.replace("outg_pct","float(row[i_pct])>"+str(pct_cutoff))
 
-    forbidden_chars = ["|", "@"]
+    forbidden_chars = ["|", "@", ":"]
 
     if trim:
         check_programs("trimal")
@@ -188,7 +188,9 @@ def main():
                 L_hitqline = line.rstrip('\n').split('\t')
                 query_id = L_hitqline[0]
                 if any(char in query_id for char in forbidden_chars):
-                    sys.exit("[x] Query Ids should not contain | or @ characters")
+                    sys.exit("[x] Query Ids should not contain | or @ or : characters")
+                if len(query_id) > 255:
+                    sys.exit("[x] Query names are too long")
                 if query_id in queries_info.keys(): # Queries that pass the initial selection
                     if(len(query_dict_set[query_id]) <= queries_info[query_id]["pos"]):
                         query_hit_id = L_hitqline[1]

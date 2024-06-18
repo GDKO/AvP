@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#v1.0.4
+#v1.0.5
 
 from depot.interface import main
 
