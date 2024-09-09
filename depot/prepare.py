@@ -102,6 +102,7 @@ def main():
     selection = config_opts["selection"]
     percent_identity = config_opts["percent_identity"]
     cutoffextend = config_opts["cutoffextend"]
+    number_hits_noingroup = config_opts["number_hits_noingroup"]
     min_num_hits = config_opts["min_num_hits"]
     percentage_similar_hits  = config_opts["percentage_similar_hits"]
     mode = config_opts["mode"]
@@ -167,8 +168,8 @@ def main():
                             ingroup_pos = 0
                         else:
                             ingroup_pos = int(L_ingroup[1])
-                        #Select at least 50 hits
-                        last_pos = min(max(max(ingroup_pos,donor_pos) + cutoffextend, 50), int(row[i_nbhits]))
+                        #Select at least number_hits_noingroup hits
+                        last_pos = min(max(max(ingroup_pos,donor_pos) + cutoffextend, number_hits_noingroup), int(row[i_nbhits]))
                         queries_info[row[i_query]] = {'pos':last_pos}
                         query_dict_set[row[i_query]] = set()
 

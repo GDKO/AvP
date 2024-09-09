@@ -15,6 +15,7 @@ outg_pct_cutoff: 80
 selection: "ai or ahs" # select sequences based on which metrics, another example "(ai or ahs) and outg_pct"
 percent_identity: 100   # select hits equal or below this number
 cutoffextend: 20    # when ingroup hit is found, we take this hit + n hits
+number_hits_noingroup: 50   # when no ingroup hit is found, we take this number of hits
 trimal: false
 min_num_hits: 4   # select queries with at least that many blast hits
 percentage_similar_hits: 0.7  # group queries based on this
