@@ -2,7 +2,7 @@
 
 """
   Usage:
-    avp classify -i <DIR> -t <FILE> -f <FILE> -c <FILE> -o <DIR>
+    avp classify -i <DIR> -t <FILE> -f <FILE> -c <FILE> -o <DIR> [-a <FILE>]
 
   Options:
     -h, --help                    show this
@@ -11,6 +11,7 @@
     -f, --classification <FILE>   classification file
     -c, --config_file <FILE>      config file
     -o, --output <DIR>            creates a directory for all output files
+    -a, --aifeatures <FILE>       alienness features file
 """
 
 import shutil
@@ -34,6 +35,7 @@ def main():
     classification_file = args['--classification']
     config_yaml = args['--config_file']
     output_dir = get_outdir(args['--output'])
+    ai_features = args['--aifeatures']
 
     out_path = get_outdir(output_dir, add_dir="classification")
 
@@ -48,13 +50,13 @@ def main():
 
     classification = {}
     results = {}
-    c_file = open(classification_file,'r')
 
-    for line in c_file:
-        if not line.startswith("#"):
-            line = line.rstrip('\n')
-            line_columns = line.split('\t')
-            classification[line_columns[0]] = line_columns[1].split(';')
+    with open(classification_file,'r') as c_file:
+        for line in c_file:
+            if not line.startswith("#"):
+                line = line.rstrip('\n')
+                line_columns = line.split('\t')
+                classification[line_columns[0]] = line_columns[1].split(';')
 
     if len(classification) > 1 :
         hgt_complex_dir = get_outdir(out_path, add_dir="HGT_complex")
@@ -81,14 +83,24 @@ def main():
     type = {}
     rank_results = {}
 
-    t_file = open(tree_results_file,'r')
+    t_file_num = 0
+    with open(tree_results_file,'r') as t_file:
+        for line in t_file:
+            line = line.rstrip('\n')
+            line_columns = line.split('\t')
+            type[line_columns[3]] = line_columns[0]
+            tree[line_columns[3]] = line_columns[2]
+            t_file_num += 1
 
-    for line in t_file:
-        line = line.rstrip('\n')
-        line_columns = line.split('\t')
-        type[line_columns[3]] = line_columns[0]
-        tree[line_columns[3]] = line_columns[2]
+    extra_ingroup_num = 0
+    ai_file_num = -1
 
+    if ai_features:
+        with open(ai_features, 'r', encoding='utf8') as csvfile:
+            for line in csvfile:
+                ai_file_num += 1
+        extra_ingroup_num = ai_file_num - t_file_num
+    
     print ("[+] Classifying Trees")
     i = 0
     for gene in tree:
@@ -154,6 +166,8 @@ def main():
             tabs = '\t\t'
         else:
             tabs = '\t'
+        if item == "Ingroup":
+            results[item] += extra_ingroup_num
         g_res.write(item+tabs+": "+str(results[item])+'\n')
 
     """
