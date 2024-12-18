@@ -193,7 +193,7 @@ def main():
                 if len(query_id) > 255:
                     sys.exit("[x] Query names are too long")
                 if query_id in queries_info.keys(): # Queries that pass the initial selection
-                    if(len(query_dict_set[query_id]) <= queries_info[query_id]["pos"]):
+                    if(len(query_dict_set[query_id]) < queries_info[query_id]["pos"]):
                         query_hit_id = L_hitqline[1]
                         if "@" in query_id:
                             sys.exit("@ symbol is not allowed: " + query_id)

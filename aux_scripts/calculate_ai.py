@@ -101,7 +101,7 @@ def main():
                         if gene not in best_hit_ingroup.keys():
                             best_hit_ingroup[gene] = {}
                             best_hit_ingroup[gene]["hit"] = hit
-                            best_hit_ingroup[gene]["pos"] = str(num_hits[gene])
+                            best_hit_ingroup[gene]["pos"] = str(num_hits[gene] + skip)
                             best_hit_ingroup[gene]["iden"] = iden
                             best_hit_ingroup[gene]["evalue"] = str(evalue)
                             best_hit_ingroup[gene]["bitscore"] = bitscore
@@ -111,7 +111,7 @@ def main():
                         if gene not in best_hit_donor.keys():
                             best_hit_donor[gene] = {}
                             best_hit_donor[gene]["hit"] = hit
-                            best_hit_donor[gene]["pos"] = str(num_hits[gene])
+                            best_hit_donor[gene]["pos"] = str(num_hits[gene] + skip)
                             best_hit_donor[gene]["iden"] = iden
                             best_hit_donor[gene]["evalue"] = str(evalue)
                             best_hit_donor[gene]["bitscore"] = bitscore
