@@ -54,6 +54,7 @@ def main():
     sum_donor_bitscore = {} #GK_ahs
     set_taxid_ingroup = {} #GK_outg_pct
     set_taxid_donor = {} #GK_outg_pct
+    gene_skip = {}
 
 
     outout_file.write("query name\tdonor\tingroup\tAI\tHGTindex\tquery hits number\tAHS\toutg_pct\n")
@@ -62,14 +63,19 @@ def main():
     with open_file(input_file) as fhr_bl:
         for line in fhr_bl:
             elements = line.split()
+            gene = elements[0]
+            
+            if any(char in gene for char in forbidden_chars):
+                sys.exit("[x] Query Ids should not contain | or @ or : characters")
+            if len(gene) > 255:
+                    sys.exit("[x] Query names are too long")
+            if gene not in gene_skip:
+                gene_skip[gene] = 0
+                        
             if len(elements)<13:
+                gene_skip[gene] += 1
                 skip += 1
             else:
-                gene = elements[0]
-                if any(char in gene for char in forbidden_chars):
-                    sys.exit("[x] Query Ids should not contain | or @ or : characters")
-                if len(gene) > 255:
-                    sys.exit("[x] Query names are too long")
                 list_genes.append(gene)
                 hit = elements[1]
                 iden = elements[2]
@@ -101,7 +107,7 @@ def main():
                         if gene not in best_hit_ingroup.keys():
                             best_hit_ingroup[gene] = {}
                             best_hit_ingroup[gene]["hit"] = hit
-                            best_hit_ingroup[gene]["pos"] = str(num_hits[gene] + skip)
+                            best_hit_ingroup[gene]["pos"] = str(num_hits[gene] + gene_skip[gene])
                             best_hit_ingroup[gene]["iden"] = iden
                             best_hit_ingroup[gene]["evalue"] = str(evalue)
                             best_hit_ingroup[gene]["bitscore"] = bitscore
@@ -111,7 +117,7 @@ def main():
                         if gene not in best_hit_donor.keys():
                             best_hit_donor[gene] = {}
                             best_hit_donor[gene]["hit"] = hit
-                            best_hit_donor[gene]["pos"] = str(num_hits[gene] + skip)
+                            best_hit_donor[gene]["pos"] = str(num_hits[gene] + gene_skip[gene])
                             best_hit_donor[gene]["iden"] = iden
                             best_hit_donor[gene]["evalue"] = str(evalue)
                             best_hit_donor[gene]["bitscore"] = bitscore
